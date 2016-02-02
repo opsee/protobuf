@@ -123,7 +123,8 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 		}
 		gqltype = gogogqlproto.GraphQLTypeVarName(p.TypeName(mobj))
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
-		panic("GETOUT")
+		// i'm unsure of this, but usually we are returning json. do we need a type hint?
+		gqltype = fmt.Sprint(pkgName, ".", "String")
 	default:
 		panic("unknown proto field type")
 	}

@@ -22,6 +22,8 @@ import google_protobuf "google/protobuf"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/gogogqlproto"
 
+import bytes "bytes"
+
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -78,7 +80,7 @@ func (m *LineItem) GetUpdatedAt() *google_protobuf.Timestamp {
 
 type Dish struct {
 	Name        string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Description []byte `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 }
 
 func (m *Dish) Reset()         { *m = Dish{} }
@@ -192,7 +194,7 @@ func (this *Dish) Equal(that interface{}) bool {
 	if this.Name != that1.Name {
 		return false
 	}
-	if this.Description != that1.Description {
+	if !bytes.Equal(this.Description, that1.Description) {
 		return false
 	}
 	return true
@@ -337,7 +339,11 @@ func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 func NewPopulatedDish(r randyFlavortown, easy bool) *Dish {
 	this := &Dish{}
 	this.Name = randStringFlavortown(r)
-	this.Description = randStringFlavortown(r)
+	v2 := r.Intn(100)
+	this.Description = make([]byte, v2)
+	for i := 0; i < v2; i++ {
+		this.Description[i] = byte(r.Intn(256))
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -362,9 +368,9 @@ func randUTF8RuneFlavortown(r randyFlavortown) rune {
 	return rune(ru + 61)
 }
 func randStringFlavortown(r randyFlavortown) string {
-	v2 := r.Intn(100)
-	tmps := make([]rune, v2)
-	for i := 0; i < v2; i++ {
+	v3 := r.Intn(100)
+	tmps := make([]rune, v3)
+	for i := 0; i < v3; i++ {
 		tmps[i] = randUTF8RuneFlavortown(r)
 	}
 	return string(tmps)
@@ -386,11 +392,11 @@ func randFieldFlavortown(data []byte, r randyFlavortown, fieldNumber int, wire i
 	switch wire {
 	case 0:
 		data = encodeVarintPopulateFlavortown(data, uint64(key))
-		v3 := r.Int63()
+		v4 := r.Int63()
 		if r.Intn(2) == 0 {
-			v3 *= -1
+			v4 *= -1
 		}
-		data = encodeVarintPopulateFlavortown(data, uint64(v3))
+		data = encodeVarintPopulateFlavortown(data, uint64(v4))
 	case 1:
 		data = encodeVarintPopulateFlavortown(data, uint64(key))
 		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))

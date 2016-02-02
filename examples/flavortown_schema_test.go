@@ -3,14 +3,25 @@ package flavortown
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
+	google_protobuf "google/protobuf"
 	"testing"
-	"time"
 )
 
 func TestSchema(t *testing.T) {
-	popr := rand.New(rand.NewSource(time.Now().UnixNano()))
-	populatedMenu := NewPopulatedMenu(popr, false)
+	populatedMenu := &Menu{
+		Items: []*LineItem{
+			{
+				Dish: &Dish{
+					Name:        "hogslop",
+					Description: []byte("disgusting"),
+				},
+				PriceCents: 100,
+				CreatedAt:  &google_protobuf.Timestamp{100, 100},
+				UpdatedAt:  &google_protobuf.Timestamp{200, 200},
+			},
+		},
+	}
+
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
 		Query: graphql.NewObject(graphql.ObjectConfig{
 			Name: "Query",
@@ -49,7 +60,7 @@ func TestSchema(t *testing.T) {
 
 	item := populatedMenu.Items[0]
 	assert.Equal(t, item.Dish.Name, getProp(queryResponse.Data, "menu", "items", 0, "dish", "name"))
-	assert.Equal(t, item.Dish.Description, getProp(queryResponse.Data, "menu", "items", 0, "dish", "description"))
+	assert.Equal(t, string(item.Dish.Description), getProp(queryResponse.Data, "menu", "items", 0, "dish", "description"))
 	assert.EqualValues(t, item.PriceCents, getProp(queryResponse.Data, "menu", "items", 0, "price_cents"))
 	assert.EqualValues(t, item.CreatedAt.String(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
 	assert.EqualValues(t, item.UpdatedAt.String(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))

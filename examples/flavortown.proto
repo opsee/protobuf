@@ -22,5 +22,5 @@ message LineItem {
 message Dish {
   option (gogogqlproto.graphql_message) = "A delicious dish on the menu";
   string name = 1 [(gogogqlproto.graphql_field) = "The name of the dish"];
-  string description = 2 [(gogogqlproto.graphql_field) = "The description of the dish"];
+  bytes description = 2 [(gogogqlproto.graphql_field) = "The description of the dish"];
 }
