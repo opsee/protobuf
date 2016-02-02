@@ -1,0 +1,15 @@
+syntax = "proto2";
+package gogogqlproto;
+
+import "google/protobuf/descriptor.proto";
+
+option java_package = "com.google.protobuf";
+option java_outer_classname = "GoGoGqlProtos";
+
+extend google.protobuf.MessageOptions {
+	optional string graphql_message = 64040;
+}
+
+extend google.protobuf.FieldOptions {
+  optional string graphql_field = 65040;
+}

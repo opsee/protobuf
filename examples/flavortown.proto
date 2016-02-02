@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/opsee/protobuf/gogogqlproto/gogogql.proto";
+
+package flavortown;
+
+message Menu {
+  option (gogogqlproto.graphql_message) = "The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors";
+  repeated LineItem items = 1 [(gogogqlproto.graphql_field) = "These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors"];
+}
+
+message LineItem {
+  option (gogogqlproto.graphql_message) = "A line item representing a dish and price";
+  Dish dish = 1 [(gogogqlproto.graphql_field) = "The dish"];
+  int32 price_cents = 2 [(gogogqlproto.graphql_field) = "The price of the dish in cents"];
+  google.protobuf.Timestamp created_at = 3 [(gogogqlproto.graphql_field) = "A timestamp representing when the dish was added to the menu"];
+  google.protobuf.Timestamp updated_at = 4 [(gogogqlproto.graphql_field) = "A timestamp representing when the dish was updated"];
+}
+
+message Dish {
+  option (gogogqlproto.graphql_message) = "A delicious dish on the menu";
+  string name = 1 [(gogogqlproto.graphql_field) = "The name of the dish"];
+  string description = 2 [(gogogqlproto.graphql_field) = "The description of the dish"];
+}
