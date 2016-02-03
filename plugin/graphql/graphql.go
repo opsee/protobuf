@@ -1,11 +1,13 @@
 package graphql
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 	"github.com/opsee/protobuf/gogogqlproto"
 	"strings"
+	"unicode"
 )
 
 type graphql struct {
@@ -33,6 +35,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.PluginImports = generator.NewPluginImports(p.Generator)
 	// p.localName = generator.FileName(file)
 	graphQLPkg := p.NewImport("github.com/graphql-go/graphql")
+	schemaPkg := p.NewImport("github.com/opsee/protobuf/gogogqlproto")
 	fmtPkg := p.NewImport("fmt")
 
 	for _, message := range file.Messages() {
@@ -49,10 +52,10 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 		}
 
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
-		typeName := gogogqlproto.SnakeCase(strings.Join(message.TypeName(), "_"))
+		typeName := snakeCase(strings.Join(message.TypeName(), "_"))
 		// p.P(`func New`, ccTypeName, `GraphQLObject() *`, graphQLPkg.Use(), `.Object {`)
 		// p.In()
-		p.P(`var `, gogogqlproto.GraphQLTypeVarName(ccTypeName), ` = `, graphQLPkg.Use(), `.NewObject(`, graphQLPkg.Use(), `.ObjectConfig{`)
+		p.P(`var `, graphQLTypeVarName(ccTypeName), ` = `, graphQLPkg.Use(), `.NewObject(`, graphQLPkg.Use(), `.ObjectConfig{`)
 		p.In()
 		p.P(`Name:        "`, typeName, `",`)
 		p.P(`Description: "`, *messageGQL, `",`)
@@ -69,7 +72,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
-			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg.Use()), `,`)
+			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg.Use(), schemaPkg.Use()), `,`)
 			p.P(`Description: "foo field description",`)
 			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
 			p.In()
@@ -96,7 +99,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	}
 }
 
-func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.FieldDescriptorProto, pkgName string) string {
+func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.FieldDescriptorProto, pkgName, schemaPkgName string) string {
 	var gqltype string
 	switch field.GetType() {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE, descriptor.FieldDescriptorProto_TYPE_FLOAT:
@@ -116,15 +119,20 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	case descriptor.FieldDescriptorProto_TYPE_ENUM:
 		panic("mapping a proto enum type to graphql is unimplemented")
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+		// TODO: fix this
 		mobj := p.ObjectNamed(field.GetTypeName())
 		if mobj.PackageName() != message.PackageName() {
-			gqltype = fmt.Sprint(pkgName, ".", "String")
+			if field.GetTypeName() == "Timestamp" {
+				gqltype = fmt.Sprint(schemaPkgName, ".", "Timestamp")
+				break
+			}
+
+			gqltype = fmt.Sprint(schemaPkgName, ".", "ByteString")
 			break
 		}
-		gqltype = gogogqlproto.GraphQLTypeVarName(p.TypeName(mobj))
+		gqltype = graphQLTypeVarName(p.TypeName(mobj))
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
-		// i'm unsure of this, but usually we are returning json. do we need a type hint?
-		gqltype = fmt.Sprint(pkgName, ".", "String")
+		gqltype = fmt.Sprint(schemaPkgName, ".", "ByteString")
 	default:
 		panic("unknown proto field type")
 	}
@@ -138,4 +146,23 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	}
 
 	return gqltype
+}
+
+func graphQLTypeVarName(typeName string) string {
+	return fmt.Sprint("GraphQL", typeName, "Type")
+}
+
+func snakeCase(in string) string {
+	runes := []rune(in)
+	length := len(runes)
+	out := bytes.NewBuffer(make([]byte, 0, length))
+
+	for i := 0; i < length; i++ {
+		if i > 0 && unicode.IsUpper(runes[i]) && ((i+1 < length && unicode.IsLower(runes[i+1])) || unicode.IsLower(runes[i-1])) {
+			out.WriteRune('_')
+		}
+		out.WriteRune(unicode.ToLower(runes[i]))
+	}
+
+	return out.String()
 }

@@ -43,7 +43,7 @@ func (p *test) Generate(imports generator.PluginImports, file *generator.FileDes
 			p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
 			p.P(`_ = NewPopulated`, ccTypeName, `(popr, false)`)
 			p.P(`objdesc := "`, *messageGQL, `"`)
-			p.P(`pdesc := `, gogogqlproto.GraphQLTypeVarName(ccTypeName), `.PrivateDescription`)
+			p.P(`pdesc := `, graphQLTypeVarName(ccTypeName), `.PrivateDescription`)
 			p.P(`if pdesc != objdesc {`)
 			p.In()
 			p.P(`t.Fatalf("String want %v got %v", objdesc, pdesc)`)

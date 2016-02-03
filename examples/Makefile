@@ -1,5 +1,4 @@
 generate:
-	protoc --gogoopsee_out=/gopath/src --proto_path=/gopath/src/go.pedge.io/pb/proto/ /gopath/src/go.pedge.io/pb/proto/google/protobuf/timestamp.proto
 	protoc --gogoopsee_out=plugins=grpc+graphql,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:. --proto_path=/gopath/src:. *.proto
 
 clean:

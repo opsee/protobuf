@@ -18,13 +18,14 @@ package flavortown
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import google_protobuf "google/protobuf"
+import google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/gogogqlproto"
 
 import bytes "bytes"
 
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
+import github_com_opsee_protobuf_gogogqlproto "github.com/opsee/protobuf/gogogqlproto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -247,7 +248,7 @@ var GraphQLLineItemType = github_com_graphql_go_graphql.NewObject(github_com_gra
 				},
 			},
 			"created_at": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_graphql_go_graphql.String,
+				Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 				Description: "foo field description",
 				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 					obj, ok := p.Source.(*LineItem)
@@ -258,7 +259,7 @@ var GraphQLLineItemType = github_com_graphql_go_graphql.NewObject(github_com_gra
 				},
 			},
 			"updated_at": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_graphql_go_graphql.String,
+				Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 				Description: "foo field description",
 				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 					obj, ok := p.Source.(*LineItem)
@@ -288,7 +289,7 @@ var GraphQLDishType = github_com_graphql_go_graphql.NewObject(github_com_graphql
 				},
 			},
 			"description": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_graphql_go_graphql.String,
+				Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 				Description: "foo field description",
 				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 					obj, ok := p.Source.(*Dish)

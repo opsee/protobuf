@@ -2,8 +2,8 @@ package flavortown
 
 import (
 	"github.com/graphql-go/graphql"
+	google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
 	"github.com/stretchr/testify/assert"
-	google_protobuf "google/protobuf"
 	"testing"
 )
 

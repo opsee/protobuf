@@ -23,7 +23,7 @@ import github_com_gogo_protobuf_jsonpb "github.com/gogo/protobuf/jsonpb"
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import _ "google/protobuf"
+import _ "github.com/opsee/protobuf/proto/google/protobuf"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/gogogqlproto"
 
