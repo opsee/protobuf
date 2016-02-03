@@ -120,6 +120,9 @@ func (this *Timestamp) Equal(that interface{}) bool {
 	}
 	return true
 }
+
+func init() {
+}
 func NewPopulatedTimestamp(r randyTimestamp, easy bool) *Timestamp {
 	this := &Timestamp{}
 	this.Seconds = int64(r.Int63())

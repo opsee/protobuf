@@ -201,108 +201,113 @@ func (this *Dish) Equal(that interface{}) bool {
 	return true
 }
 
-var GraphQLMenuType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-	Name:        "menu",
-	Description: "The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors",
-	Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
-		return github_com_graphql_go_graphql.Fields{
-			"items": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_graphql_go_graphql.NewList(GraphQLLineItemType),
-				Description: "foo field description",
-				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-					obj, ok := p.Source.(*Menu)
-					if !ok {
-						return nil, fmt.Errorf("field items not resolved")
-					}
-					return obj.Items, nil
-				},
-			},
-		}
-	}),
-})
-var GraphQLLineItemType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-	Name:        "line_item",
-	Description: "A line item representing a dish and price",
-	Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
-		return github_com_graphql_go_graphql.Fields{
-			"dish": &github_com_graphql_go_graphql.Field{
-				Type:        GraphQLDishType,
-				Description: "foo field description",
-				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-					obj, ok := p.Source.(*LineItem)
-					if !ok {
-						return nil, fmt.Errorf("field dish not resolved")
-					}
-					return obj.Dish, nil
-				},
-			},
-			"price_cents": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_graphql_go_graphql.Int,
-				Description: "foo field description",
-				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-					obj, ok := p.Source.(*LineItem)
-					if !ok {
-						return nil, fmt.Errorf("field price_cents not resolved")
-					}
-					return obj.PriceCents, nil
-				},
-			},
-			"created_at": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-				Description: "foo field description",
-				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-					obj, ok := p.Source.(*LineItem)
-					if !ok {
-						return nil, fmt.Errorf("field created_at not resolved")
-					}
-					return obj.CreatedAt, nil
-				},
-			},
-			"updated_at": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-				Description: "foo field description",
-				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-					obj, ok := p.Source.(*LineItem)
-					if !ok {
-						return nil, fmt.Errorf("field updated_at not resolved")
-					}
-					return obj.UpdatedAt, nil
-				},
-			},
-		}
-	}),
-})
-var GraphQLDishType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-	Name:        "dish",
-	Description: "A delicious dish on the menu",
-	Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
-		return github_com_graphql_go_graphql.Fields{
-			"name": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_graphql_go_graphql.String,
-				Description: "foo field description",
-				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-					obj, ok := p.Source.(*Dish)
-					if !ok {
-						return nil, fmt.Errorf("field name not resolved")
-					}
-					return obj.Name, nil
-				},
-			},
-			"description": &github_com_graphql_go_graphql.Field{
-				Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-				Description: "foo field description",
-				Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-					obj, ok := p.Source.(*Dish)
-					if !ok {
-						return nil, fmt.Errorf("field description not resolved")
-					}
-					return obj.Description, nil
-				},
-			},
-		}
-	}),
-})
+var GraphQLMenuType *github_com_graphql_go_graphql.Object
+var GraphQLLineItemType *github_com_graphql_go_graphql.Object
+var GraphQLDishType *github_com_graphql_go_graphql.Object
 
+func init() {
+	GraphQLMenuType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
+		Name:        "menu",
+		Description: "The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors",
+		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
+			return github_com_graphql_go_graphql.Fields{
+				"items": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_graphql_go_graphql.NewList(GraphQLLineItemType),
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*Menu)
+						if !ok {
+							return nil, fmt.Errorf("field items not resolved")
+						}
+						return obj.Items, nil
+					},
+				},
+			}
+		}),
+	})
+	GraphQLLineItemType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
+		Name:        "line_item",
+		Description: "A line item representing a dish and price",
+		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
+			return github_com_graphql_go_graphql.Fields{
+				"dish": &github_com_graphql_go_graphql.Field{
+					Type:        GraphQLDishType,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*LineItem)
+						if !ok {
+							return nil, fmt.Errorf("field dish not resolved")
+						}
+						return obj.Dish, nil
+					},
+				},
+				"price_cents": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_graphql_go_graphql.Int,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*LineItem)
+						if !ok {
+							return nil, fmt.Errorf("field price_cents not resolved")
+						}
+						return obj.PriceCents, nil
+					},
+				},
+				"created_at": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*LineItem)
+						if !ok {
+							return nil, fmt.Errorf("field created_at not resolved")
+						}
+						return obj.CreatedAt, nil
+					},
+				},
+				"updated_at": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*LineItem)
+						if !ok {
+							return nil, fmt.Errorf("field updated_at not resolved")
+						}
+						return obj.UpdatedAt, nil
+					},
+				},
+			}
+		}),
+	})
+	GraphQLDishType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
+		Name:        "dish",
+		Description: "A delicious dish on the menu",
+		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
+			return github_com_graphql_go_graphql.Fields{
+				"name": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_graphql_go_graphql.String,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*Dish)
+						if !ok {
+							return nil, fmt.Errorf("field name not resolved")
+						}
+						return obj.Name, nil
+					},
+				},
+				"description": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*Dish)
+						if !ok {
+							return nil, fmt.Errorf("field description not resolved")
+						}
+						return obj.Description, nil
+					},
+				},
+			}
+		}),
+	})
+}
 func NewPopulatedMenu(r randyFlavortown, easy bool) *Menu {
 	this := &Menu{}
 	if r.Intn(10) != 0 {

@@ -13,6 +13,7 @@ import (
 type graphql struct {
 	*generator.Generator
 	generator.PluginImports
+	messages []*generator.Descriptor
 }
 
 func init() {
@@ -33,7 +34,8 @@ func (p *graphql) Init(g *generator.Generator) {
 
 func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.PluginImports = generator.NewPluginImports(p.Generator)
-	// p.localName = generator.FileName(file)
+	p.messages = make([]*generator.Descriptor, 0)
+
 	graphQLPkg := p.NewImport("github.com/graphql-go/graphql")
 	schemaPkg := p.NewImport("github.com/opsee/protobuf/gogogqlproto")
 	fmtPkg := p.NewImport("fmt")
@@ -51,11 +53,22 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			continue
 		}
 
+		p.messages = append(p.messages, message)
+
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		p.P(`var `, graphQLTypeVarName(ccTypeName), ` *`, graphQLPkg.Use(), `.Object`)
+	}
+
+	p.P()
+	p.P(`func init() {`)
+	p.In()
+
+	for _, message := range p.messages {
+		messageGQL := gogogqlproto.GetGraphQLMessage(message.DescriptorProto)
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
 		typeName := snakeCase(strings.Join(message.TypeName(), "_"))
-		// p.P(`func New`, ccTypeName, `GraphQLObject() *`, graphQLPkg.Use(), `.Object {`)
-		// p.In()
-		p.P(`var `, graphQLTypeVarName(ccTypeName), ` = `, graphQLPkg.Use(), `.NewObject(`, graphQLPkg.Use(), `.ObjectConfig{`)
+
+		p.P(graphQLTypeVarName(ccTypeName), ` = `, graphQLPkg.Use(), `.NewObject(`, graphQLPkg.Use(), `.ObjectConfig{`)
 		p.In()
 		p.P(`Name:        "`, typeName, `",`)
 		p.P(`Description: "`, *messageGQL, `",`)
@@ -64,12 +77,6 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 		p.P(`return `, graphQLPkg.Use(), `.Fields{`)
 		p.In()
 		for _, field := range message.DescriptorProto.Field {
-			// get type
-			// get non null
-			// get description
-			// required := field.IsRequired()
-			// repeated := field.IsRepeated()
-
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
 			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg.Use(), schemaPkg.Use()), `,`)
@@ -94,9 +101,10 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 		p.P(`}),`)
 		p.Out()
 		p.P(`})`)
-		// p.Out()
-		// p.P(`}`)
 	}
+
+	p.Out()
+	p.P(`}`)
 }
 
 func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.FieldDescriptorProto, pkgName, schemaPkgName string) string {
