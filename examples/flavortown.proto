@@ -13,14 +13,23 @@ message Menu {
 
 message LineItem {
   option (gogogqlproto.graphql_message) = "A line item representing a dish and price";
-  Dish dish = 1 [(gogogqlproto.graphql_field) = "The dish"];
+  oneof dish {
+    Lunch lunch = 100 [(gogogqlproto.graphql_field) = "A lunch dish"];
+    Dessert dessert = 101 [(gogogqlproto.graphql_field) = "A dessert dish"];
+  }
   int32 price_cents = 2 [(gogogqlproto.graphql_field) = "The price of the dish in cents"];
   google.protobuf.Timestamp created_at = 3 [(gogogqlproto.graphql_field) = "A timestamp representing when the dish was added to the menu"];
   google.protobuf.Timestamp updated_at = 4 [(gogogqlproto.graphql_field) = "A timestamp representing when the dish was updated"];
 }
 
-message Dish {
-  option (gogogqlproto.graphql_message) = "A delicious dish on the menu";
+message Lunch {
+  option (gogogqlproto.graphql_message) = "A delicious lunch dish on the menu";
   string name = 1 [(gogogqlproto.graphql_field) = "The name of the dish"];
   bytes description = 2 [(gogogqlproto.graphql_field) = "The description of the dish"];
+}
+
+message Dessert {
+  option (gogogqlproto.graphql_message) = "A delicious dessert dish on the menu";
+  string name = 1 [(gogogqlproto.graphql_field) = "The name of the dish"];
+  int32 sweetness = 2 [(gogogqlproto.graphql_field) = "How sweet is the dish"];
 }
