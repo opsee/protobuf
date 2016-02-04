@@ -1,10 +1,12 @@
 package graphql
 
 import (
+	"fmt"
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/plugin/testgen"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 	"github.com/opsee/protobuf/gogogqlproto"
+	"strings"
 )
 
 type test struct {
@@ -21,28 +23,30 @@ func NewTest(g *generator.Generator) testgen.TestPlugin {
 
 func (p *test) Generate(imports generator.PluginImports, file *generator.FileDescriptor) bool {
 	used := false
+
+	if gogogqlproto.GetGraphQLFile(file.FileDescriptorProto) != true {
+		return used
+	}
+
 	testingPkg := imports.NewImport("testing")
 	randPkg := imports.NewImport("math/rand")
 	timePkg := imports.NewImport("time")
 
-	for _, message := range file.Messages() {
-		messageGQL := gogogqlproto.GetGraphQLMessage(message.DescriptorProto)
-
-		if messageGQL == nil {
-			continue
-		}
+	for mi, message := range file.Messages() {
 		if message.DescriptorProto.GetOptions().GetMapEntry() {
 			continue
 		}
 
+		messageGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d", mi)))
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+
 		if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
 			used = true
 			p.P(`func Test`, ccTypeName, `GraphQL(t *`, testingPkg.Use(), `.T) {`)
 			p.In()
 			p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
 			p.P(`_ = NewPopulated`, ccTypeName, `(popr, false)`)
-			p.P(`objdesc := "`, *messageGQL, `"`)
+			p.P(`objdesc := "`, messageGQL, `"`)
 			p.P(`pdesc := `, graphQLTypeVarName(ccTypeName), `.PrivateDescription`)
 			p.P(`if pdesc != objdesc {`)
 			p.In()

@@ -59,9 +59,6 @@ func (this *Empty) Equal(that interface{}) bool {
 	}
 	return true
 }
-
-func init() {
-}
 func NewPopulatedEmpty(r randyEmpty, easy bool) *Empty {
 	this := &Empty{}
 	if !easy && r.Intn(10) != 0 {
