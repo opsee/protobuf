@@ -126,9 +126,6 @@ func (this *Any) Equal(that interface{}) bool {
 	}
 	return true
 }
-
-func init() {
-}
 func NewPopulatedAny(r randyAny, easy bool) *Any {
 	this := &Any{}
 	this.TypeUrl = randStringAny(r)

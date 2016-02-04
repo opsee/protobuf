@@ -18,8 +18,10 @@ type graphql struct {
 }
 
 type oneof struct {
-	message *generator.Descriptor
-	fields  []*descriptor.FieldDescriptorProto
+	message      *generator.Descriptor
+	fields       []*descriptor.FieldDescriptorProto
+	messageIndex int
+	oneofIndex   int
 }
 
 func init() {
@@ -43,19 +45,19 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.messages = make([]*generator.Descriptor, 0)
 	p.oneofs = make(map[*descriptor.OneofDescriptorProto]*oneof)
 
+	if gogogqlproto.GetGraphQLFile(file.FileDescriptorProto) != true {
+		return
+	}
+
 	graphQLPkg := p.NewImport("github.com/graphql-go/graphql")
 	schemaPkg := p.NewImport("github.com/opsee/protobuf/gogogqlproto")
 	fmtPkg := p.NewImport("fmt")
 
-	for _, message := range file.Messages() {
-		messageGQL := gogogqlproto.GetGraphQLMessage(message.DescriptorProto)
-
-		if messageGQL == nil {
-			continue
-		}
+	for mi, message := range file.Messages() {
 		if message.DescriptorProto.GetOptions().GetMapEntry() {
 			continue
 		}
+
 		if len(message.DescriptorProto.Field) == 0 {
 			continue
 		}
@@ -70,7 +72,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.P(`var `, graphQLUnionVarName(message, field), ` *`, graphQLPkg.Use(), `.Union`)
 
 			// collect the unions to make them easier to access in the file
-			p.oneofs[field] = oneofFields(message, i)
+			p.oneofs[field] = oneofFields(message, mi, i)
 		}
 	}
 
@@ -78,28 +80,31 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.P(`func init() {`)
 	p.In()
 
-	for _, message := range p.messages {
-		messageGQL := gogogqlproto.GetGraphQLMessage(message.DescriptorProto)
+	for mi, message := range p.messages {
+		messageGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d", mi)))
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
 		typeName := snakeCase(strings.Join(message.TypeName(), "_"))
 
 		p.P(graphQLTypeVarName(ccTypeName), ` = `, graphQLPkg.Use(), `.NewObject(`, graphQLPkg.Use(), `.ObjectConfig{`)
 		p.In()
 		p.P(`Name:        "`, typeName, `",`)
-		p.P(`Description: "`, *messageGQL, `",`)
+		p.P(`Description: "`, messageGQL, `",`)
 		p.P(`Fields: (`, graphQLPkg.Use(), `.FieldsThunk)(func() `, graphQLPkg.Use(), `.Fields {`)
 		p.In()
 		p.P(`return `, graphQLPkg.Use(), `.Fields{`)
 		p.In()
-		for _, field := range message.DescriptorProto.Field {
+		for fi, field := range message.DescriptorProto.Field {
 			// skip defining a regular object field for unions, that comes next
 			if field.OneofIndex != nil {
 				continue
 			}
+
+			fieldGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,2,%d", mi, fi)))
+
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
 			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg.Use(), schemaPkg.Use()), `,`)
-			p.P(`Description: "foo field description",`)
+			p.P(`Description: "`, fieldGQL, `",`)
 			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
 			p.In()
 			p.P(`switch obj := p.Source.(type) {`)
@@ -125,11 +130,13 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.Out()
 			p.P(`},`)
 		}
-		for _, field := range message.DescriptorProto.OneofDecl {
+		for fi, field := range message.DescriptorProto.OneofDecl {
+			fieldGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,8,%d", mi, fi)))
+
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
 			p.P(`Type:        `, graphQLUnionVarName(message, field), `,`)
-			p.P(`Description: "foo field description",`)
+			p.P(`Description: "`, fieldGQL, `",`)
 			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
 			p.In()
 			p.P(`obj, ok := p.Source.(*`, ccTypeName, `)`)
@@ -156,11 +163,12 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	// declare our unions last, since the types will have needed to be defined from all messages first
 	for decl, oo := range p.oneofs {
 		ccTypeName := generator.CamelCaseSlice(oo.message.TypeName())
+		fieldGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,8,%d", oo.messageIndex, oo.oneofIndex)))
 
 		p.P(graphQLUnionVarName(oo.message, decl), ` = `, graphQLPkg.Use(), `.NewUnion(`, graphQLPkg.Use(), `.UnionConfig{`)
 		p.In()
 		p.P(`Name:        "`, graphQLUnionName(oo.message, decl), `",`)
-		p.P(`Description: "foo union description",`)
+		p.P(`Description: "`, fieldGQL, `",`)
 		p.P(`Types:       []*`, graphQLPkg.Use(), `.Object{`)
 		p.In()
 		for _, field := range oo.fields {
@@ -239,16 +247,16 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	return gqltype
 }
 
-func oneofFields(message *generator.Descriptor, index int) *oneof {
+func oneofFields(message *generator.Descriptor, messageIndex, oneofIndex int) *oneof {
 	fields := make([]*descriptor.FieldDescriptorProto, 0)
 
 	for _, field := range message.DescriptorProto.Field {
-		if field.OneofIndex != nil && *field.OneofIndex == int32(index) {
+		if field.OneofIndex != nil && *field.OneofIndex == int32(oneofIndex) {
 			fields = append(fields, field)
 		}
 	}
 
-	return &oneof{message, fields}
+	return &oneof{message, fields, messageIndex, oneofIndex}
 }
 
 func graphQLTypeVarName(typeName string) string {

@@ -22,23 +22,14 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-var E_GraphqlMessage = &proto.ExtensionDesc{
-	ExtendedType:  (*google_protobuf.MessageOptions)(nil),
-	ExtensionType: (*string)(nil),
+var E_Graphql = &proto.ExtensionDesc{
+	ExtendedType:  (*google_protobuf.FileOptions)(nil),
+	ExtensionType: (*bool)(nil),
 	Field:         64040,
-	Name:          "gogogqlproto.graphql_message",
-	Tag:           "bytes,64040,opt,name=graphql_message",
-}
-
-var E_GraphqlField = &proto.ExtensionDesc{
-	ExtendedType:  (*google_protobuf.FieldOptions)(nil),
-	ExtensionType: (*string)(nil),
-	Field:         65040,
-	Name:          "gogogqlproto.graphql_field",
-	Tag:           "bytes,65040,opt,name=graphql_field",
+	Name:          "gogogqlproto.graphql",
+	Tag:           "varint,64040,opt,name=graphql",
 }
 
 func init() {
-	proto.RegisterExtension(E_GraphqlMessage)
-	proto.RegisterExtension(E_GraphqlField)
+	proto.RegisterExtension(E_Graphql)
 }

@@ -6,30 +6,43 @@ import "github.com/opsee/protobuf/gogogqlproto/gogogql.proto";
 
 package flavortown;
 
+option (gogogqlproto.graphql) = true;
+
+// The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors
 message Menu {
-  option (gogogqlproto.graphql_message) = "The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors";
-  repeated LineItem items = 1 [(gogogqlproto.graphql_field) = "These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors"];
+  // These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors
+  repeated LineItem items = 1;
 }
 
+// A line item representing a dish and price
 message LineItem {
-  option (gogogqlproto.graphql_message) = "A line item representing a dish and price";
+  // The menu dish, can either be lunch or dessert
   oneof dish {
-    Lunch lunch = 100 [(gogogqlproto.graphql_field) = "A lunch dish"];
-    Dessert dessert = 101 [(gogogqlproto.graphql_field) = "A dessert dish"];
+    // A lunch dish
+    Lunch lunch = 100;
+    // A dessert dish
+    Dessert dessert = 101;
   }
-  int32 price_cents = 2 [(gogogqlproto.graphql_field) = "The price of the dish in cents"];
-  google.protobuf.Timestamp created_at = 3 [(gogogqlproto.graphql_field) = "A timestamp representing when the dish was added to the menu"];
-  google.protobuf.Timestamp updated_at = 4 [(gogogqlproto.graphql_field) = "A timestamp representing when the dish was updated"];
+  // The price of the dish in cents
+  int32 price_cents = 2;
+  // A timestamp representing when the dish was added to the menu
+  google.protobuf.Timestamp created_at = 3;
+  // A timestamp representing when the dish was updated
+  google.protobuf.Timestamp updated_at = 4;
 }
 
+// A delicious lunch dish on the menu
 message Lunch {
-  option (gogogqlproto.graphql_message) = "A delicious lunch dish on the menu";
-  string name = 1 [(gogogqlproto.graphql_field) = "The name of the dish"];
-  bytes description = 2 [(gogogqlproto.graphql_field) = "The description of the dish"];
+  // The name of the dish
+  string name = 1;
+  // The description of the dish
+  bytes description = 2;
 }
 
+// A delicious dessert dish on the menu
 message Dessert {
-  option (gogogqlproto.graphql_message) = "A delicious dessert dish on the menu";
-  string name = 1 [(gogogqlproto.graphql_field) = "The name of the dish"];
-  int32 sweetness = 2 [(gogogqlproto.graphql_field) = "How sweet is the dish"];
+  // The name of the dish
+  string name = 1;
+  // How sweet is the dish, an integer between 0 and 10
+  int32 sweetness = 2;
 }

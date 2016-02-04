@@ -33,7 +33,9 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors
 type Menu struct {
+	// These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors
 	Items []*LineItem `protobuf:"bytes,1,rep,name=items" json:"items,omitempty"`
 }
 
@@ -48,14 +50,20 @@ func (m *Menu) GetItems() []*LineItem {
 	return nil
 }
 
+// A line item representing a dish and price
 type LineItem struct {
+	// The menu dish, can either be lunch or dessert
+	//
 	// Types that are valid to be assigned to Dish:
 	//	*LineItem_Lunch
 	//	*LineItem_Dessert
-	Dish       isLineItem_Dish            `protobuf_oneof:"dish"`
-	PriceCents int32                      `protobuf:"varint,2,opt,name=price_cents,proto3" json:"price_cents,omitempty"`
-	CreatedAt  *google_protobuf.Timestamp `protobuf:"bytes,3,opt,name=created_at" json:"created_at,omitempty"`
-	UpdatedAt  *google_protobuf.Timestamp `protobuf:"bytes,4,opt,name=updated_at" json:"updated_at,omitempty"`
+	Dish isLineItem_Dish `protobuf_oneof:"dish"`
+	// The price of the dish in cents
+	PriceCents int32 `protobuf:"varint,2,opt,name=price_cents,proto3" json:"price_cents,omitempty"`
+	// A timestamp representing when the dish was added to the menu
+	CreatedAt *google_protobuf.Timestamp `protobuf:"bytes,3,opt,name=created_at" json:"created_at,omitempty"`
+	// A timestamp representing when the dish was updated
+	UpdatedAt *google_protobuf.Timestamp `protobuf:"bytes,4,opt,name=updated_at" json:"updated_at,omitempty"`
 }
 
 func (m *LineItem) Reset()         { *m = LineItem{} }
@@ -165,8 +173,11 @@ func _LineItem_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffe
 	}
 }
 
+// A delicious lunch dish on the menu
 type Lunch struct {
-	Name        string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The name of the dish
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// The description of the dish
 	Description []byte `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 }
 
@@ -174,9 +185,12 @@ func (m *Lunch) Reset()         { *m = Lunch{} }
 func (m *Lunch) String() string { return proto.CompactTextString(m) }
 func (*Lunch) ProtoMessage()    {}
 
+// A delicious dessert dish on the menu
 type Dessert struct {
-	Name      string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Sweetness int32  `protobuf:"varint,2,opt,name=sweetness,proto3" json:"sweetness,omitempty"`
+	// The name of the dish
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// How sweet is the dish, an integer between 0 and 10
+	Sweetness int32 `protobuf:"varint,2,opt,name=sweetness,proto3" json:"sweetness,omitempty"`
 }
 
 func (m *Dessert) Reset()         { *m = Dessert{} }
@@ -410,7 +424,7 @@ func init() {
 			return github_com_graphql_go_graphql.Fields{
 				"items": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_graphql_go_graphql.NewList(GraphQLLineItemType),
-					Description: "foo field description",
+					Description: "These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *Menu:
@@ -429,7 +443,7 @@ func init() {
 			return github_com_graphql_go_graphql.Fields{
 				"price_cents": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_graphql_go_graphql.Int,
-					Description: "foo field description",
+					Description: "The price of the dish in cents",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *LineItem:
@@ -440,7 +454,7 @@ func init() {
 				},
 				"created_at": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-					Description: "foo field description",
+					Description: "A timestamp representing when the dish was added to the menu",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *LineItem:
@@ -451,7 +465,7 @@ func init() {
 				},
 				"updated_at": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-					Description: "foo field description",
+					Description: "A timestamp representing when the dish was updated",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *LineItem:
@@ -462,7 +476,7 @@ func init() {
 				},
 				"dish": &github_com_graphql_go_graphql.Field{
 					Type:        GraphQLLineItemDishUnion,
-					Description: "foo field description",
+					Description: "The menu dish, can either be lunch or dessert",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if !ok {
@@ -481,7 +495,7 @@ func init() {
 			return github_com_graphql_go_graphql.Fields{
 				"name": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_graphql_go_graphql.String,
-					Description: "foo field description",
+					Description: "The name of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *Lunch:
@@ -494,7 +508,7 @@ func init() {
 				},
 				"description": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-					Description: "foo field description",
+					Description: "The description of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *Lunch:
@@ -515,7 +529,7 @@ func init() {
 			return github_com_graphql_go_graphql.Fields{
 				"name": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_graphql_go_graphql.String,
-					Description: "foo field description",
+					Description: "The name of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *Dessert:
@@ -528,7 +542,7 @@ func init() {
 				},
 				"sweetness": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_graphql_go_graphql.Int,
-					Description: "foo field description",
+					Description: "How sweet is the dish, an integer between 0 and 10",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						switch obj := p.Source.(type) {
 						case *Dessert:
@@ -544,7 +558,7 @@ func init() {
 	})
 	GraphQLLineItemDishUnion = github_com_graphql_go_graphql.NewUnion(github_com_graphql_go_graphql.UnionConfig{
 		Name:        "LineItemDish",
-		Description: "foo union description",
+		Description: "The menu dish, can either be lunch or dessert",
 		Types: []*github_com_graphql_go_graphql.Object{
 			GraphQLLunchType,
 			GraphQLDessertType,
