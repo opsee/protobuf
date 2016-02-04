@@ -14,6 +14,12 @@ type graphql struct {
 	*generator.Generator
 	generator.PluginImports
 	messages []*generator.Descriptor
+	oneofs   map[*descriptor.OneofDescriptorProto]*oneof
+}
+
+type oneof struct {
+	message *generator.Descriptor
+	fields  []*descriptor.FieldDescriptorProto
 }
 
 func init() {
@@ -35,6 +41,7 @@ func (p *graphql) Init(g *generator.Generator) {
 func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.PluginImports = generator.NewPluginImports(p.Generator)
 	p.messages = make([]*generator.Descriptor, 0)
+	p.oneofs = make(map[*descriptor.OneofDescriptorProto]*oneof)
 
 	graphQLPkg := p.NewImport("github.com/graphql-go/graphql")
 	schemaPkg := p.NewImport("github.com/opsee/protobuf/gogogqlproto")
@@ -55,8 +62,16 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 
 		p.messages = append(p.messages, message)
 
+		// generate the var declarations first
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
 		p.P(`var `, graphQLTypeVarName(ccTypeName), ` *`, graphQLPkg.Use(), `.Object`)
+
+		for i, field := range message.DescriptorProto.OneofDecl {
+			p.P(`var `, graphQLUnionVarName(message, field), ` *`, graphQLPkg.Use(), `.Union`)
+
+			// collect the unions to make them easier to access in the file
+			p.oneofs[field] = oneofFields(message, i)
+		}
 	}
 
 	p.P()
@@ -77,9 +92,43 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 		p.P(`return `, graphQLPkg.Use(), `.Fields{`)
 		p.In()
 		for _, field := range message.DescriptorProto.Field {
+			// skip defining a regular object field for unions, that comes next
+			if field.OneofIndex != nil {
+				continue
+			}
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
 			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg.Use(), schemaPkg.Use()), `,`)
+			p.P(`Description: "foo field description",`)
+			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
+			p.In()
+			p.P(`switch obj := p.Source.(type) {`)
+			p.P(`case *`, ccTypeName, `:`)
+			p.In()
+			p.P(`return obj.`, p.GetFieldName(message, field), `, nil`)
+			p.Out()
+			for _, oo := range p.oneofs {
+				for _, oneof := range oo.fields {
+					tname := p.TypeName(p.ObjectNamed(oneof.GetTypeName()))
+					if tname == ccTypeName {
+						p.P(`case *`, generator.CamelCaseSlice(oo.message.TypeName()), `_`, tname, `:`)
+						p.In()
+						p.P(`return obj.`, tname, `.`, p.GetFieldName(message, field), `, nil`)
+						p.Out()
+					}
+				}
+			}
+			p.P(`}`)
+			p.P(`return nil, `, fmtPkg.Use(), `.Errorf("field `, field.GetName(), ` not resolved")`)
+			p.Out()
+			p.P(`},`)
+			p.Out()
+			p.P(`},`)
+		}
+		for _, field := range message.DescriptorProto.OneofDecl {
+			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
+			p.In()
+			p.P(`Type:        `, graphQLUnionVarName(message, field), `,`)
 			p.P(`Description: "foo field description",`)
 			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
 			p.In()
@@ -89,16 +138,50 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.P(`return nil, `, fmtPkg.Use(), `.Errorf("field `, field.GetName(), ` not resolved")`)
 			p.Out()
 			p.P(`}`)
-			p.P(`return obj.`, p.GetFieldName(message, field), `, nil`)
+			p.P(`return obj.Get`, generator.CamelCase(field.GetName()), `(), nil`)
 			p.Out()
 			p.P(`},`)
 			p.Out()
 			p.P(`},`)
+
 		}
 		p.Out()
 		p.P(`}`)
 		p.Out()
 		p.P(`}),`)
+		p.Out()
+		p.P(`})`)
+	}
+
+	// declare our unions last, since the types will have needed to be defined from all messages first
+	for decl, oo := range p.oneofs {
+		ccTypeName := generator.CamelCaseSlice(oo.message.TypeName())
+
+		p.P(graphQLUnionVarName(oo.message, decl), ` = `, graphQLPkg.Use(), `.NewUnion(`, graphQLPkg.Use(), `.UnionConfig{`)
+		p.In()
+		p.P(`Name:        "`, graphQLUnionName(oo.message, decl), `",`)
+		p.P(`Description: "foo union description",`)
+		p.P(`Types:       []*`, graphQLPkg.Use(), `.Object{`)
+		p.In()
+		for _, field := range oo.fields {
+			p.P(graphQLTypeVarName(p.TypeName(p.ObjectNamed(field.GetTypeName()))), `,`)
+		}
+		p.Out()
+		p.P(`},`)
+		p.P(`ResolveType: func (value interface{}, info `, graphQLPkg.Use(), `.ResolveInfo) *`, graphQLPkg.Use(), `.Object {`)
+		p.In()
+		p.P(`switch value.(type) {`)
+		for _, field := range oo.fields {
+			tname := p.TypeName(p.ObjectNamed(field.GetTypeName()))
+			p.P(`case *`, ccTypeName, `_`, tname, `:`)
+			p.In()
+			p.P(`return `, graphQLTypeVarName(tname))
+			p.Out()
+		}
+		p.P(`}`)
+		p.P(`return nil`)
+		p.Out()
+		p.P(`},`)
 		p.Out()
 		p.P(`})`)
 	}
@@ -127,7 +210,7 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	case descriptor.FieldDescriptorProto_TYPE_ENUM:
 		panic("mapping a proto enum type to graphql is unimplemented")
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
-		// TODO: fix this
+		// TODO: fix this to be more robust about imported objects
 		mobj := p.ObjectNamed(field.GetTypeName())
 		if mobj.PackageName() != message.PackageName() {
 			if field.GetTypeName() == "Timestamp" {
@@ -156,8 +239,28 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	return gqltype
 }
 
+func oneofFields(message *generator.Descriptor, index int) *oneof {
+	fields := make([]*descriptor.FieldDescriptorProto, 0)
+
+	for _, field := range message.DescriptorProto.Field {
+		if field.OneofIndex != nil && *field.OneofIndex == int32(index) {
+			fields = append(fields, field)
+		}
+	}
+
+	return &oneof{message, fields}
+}
+
 func graphQLTypeVarName(typeName string) string {
 	return fmt.Sprint("GraphQL", typeName, "Type")
+}
+
+func graphQLUnionName(message *generator.Descriptor, oneof *descriptor.OneofDescriptorProto) string {
+	return generator.CamelCaseSlice(message.TypeName()) + generator.CamelCase(oneof.GetName())
+}
+
+func graphQLUnionVarName(message *generator.Descriptor, oneof *descriptor.OneofDescriptorProto) string {
+	return fmt.Sprint("GraphQL", graphQLUnionName(message, oneof), "Union")
 }
 
 func snakeCase(in string) string {

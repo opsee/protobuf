@@ -2,6 +2,8 @@ VANITY_DIR = gogogqlproto
 EXAMPLE_DIR = examples
 PROTO_DIR = proto
 
+all: EXAMPLE_DIR
+
 VANITY_DIR:
 	docker run --rm -it -v $$(pwd):/build quay.io/opsee/build-go:go15 /bin/bash -c 'cd /build/$(VANITY_DIR) && make generate'
 
@@ -16,8 +18,6 @@ EXAMPLE_DIR: docker PROTO_DIR
 
 push:
 	docker push quay.io/opsee/build-go:gogoopsee
-
-all: EXAMPLE_DIR
 
 clean:
 	$(MAKE) -C $(EXAMPLE_DIR) clean

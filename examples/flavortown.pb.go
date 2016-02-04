@@ -11,7 +11,8 @@ It is generated from these files:
 It has these top-level messages:
 	Menu
 	LineItem
-	Dish
+	Lunch
+	Dessert
 */
 package flavortown
 
@@ -48,7 +49,10 @@ func (m *Menu) GetItems() []*LineItem {
 }
 
 type LineItem struct {
-	Dish       *Dish                      `protobuf:"bytes,1,opt,name=dish" json:"dish,omitempty"`
+	// Types that are valid to be assigned to Dish:
+	//	*LineItem_Lunch
+	//	*LineItem_Dessert
+	Dish       isLineItem_Dish            `protobuf_oneof:"dish"`
 	PriceCents int32                      `protobuf:"varint,2,opt,name=price_cents,proto3" json:"price_cents,omitempty"`
 	CreatedAt  *google_protobuf.Timestamp `protobuf:"bytes,3,opt,name=created_at" json:"created_at,omitempty"`
 	UpdatedAt  *google_protobuf.Timestamp `protobuf:"bytes,4,opt,name=updated_at" json:"updated_at,omitempty"`
@@ -58,9 +62,38 @@ func (m *LineItem) Reset()         { *m = LineItem{} }
 func (m *LineItem) String() string { return proto.CompactTextString(m) }
 func (*LineItem) ProtoMessage()    {}
 
-func (m *LineItem) GetDish() *Dish {
+type isLineItem_Dish interface {
+	isLineItem_Dish()
+	Equal(interface{}) bool
+}
+
+type LineItem_Lunch struct {
+	Lunch *Lunch `protobuf:"bytes,100,opt,name=lunch,oneof"`
+}
+type LineItem_Dessert struct {
+	Dessert *Dessert `protobuf:"bytes,101,opt,name=dessert,oneof"`
+}
+
+func (*LineItem_Lunch) isLineItem_Dish()   {}
+func (*LineItem_Dessert) isLineItem_Dish() {}
+
+func (m *LineItem) GetDish() isLineItem_Dish {
 	if m != nil {
 		return m.Dish
+	}
+	return nil
+}
+
+func (m *LineItem) GetLunch() *Lunch {
+	if x, ok := m.GetDish().(*LineItem_Lunch); ok {
+		return x.Lunch
+	}
+	return nil
+}
+
+func (m *LineItem) GetDessert() *Dessert {
+	if x, ok := m.GetDish().(*LineItem_Dessert); ok {
+		return x.Dessert
 	}
 	return nil
 }
@@ -79,19 +112,82 @@ func (m *LineItem) GetUpdatedAt() *google_protobuf.Timestamp {
 	return nil
 }
 
-type Dish struct {
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*LineItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
+	return _LineItem_OneofMarshaler, _LineItem_OneofUnmarshaler, []interface{}{
+		(*LineItem_Lunch)(nil),
+		(*LineItem_Dessert)(nil),
+	}
+}
+
+func _LineItem_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*LineItem)
+	// dish
+	switch x := m.Dish.(type) {
+	case *LineItem_Lunch:
+		_ = b.EncodeVarint(100<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Lunch); err != nil {
+			return err
+		}
+	case *LineItem_Dessert:
+		_ = b.EncodeVarint(101<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Dessert); err != nil {
+			return err
+		}
+	case nil:
+	default:
+		return fmt.Errorf("LineItem.Dish has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _LineItem_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*LineItem)
+	switch tag {
+	case 100: // dish.lunch
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(Lunch)
+		err := b.DecodeMessage(msg)
+		m.Dish = &LineItem_Lunch{msg}
+		return true, err
+	case 101: // dish.dessert
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(Dessert)
+		err := b.DecodeMessage(msg)
+		m.Dish = &LineItem_Dessert{msg}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+type Lunch struct {
 	Name        string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description []byte `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 }
 
-func (m *Dish) Reset()         { *m = Dish{} }
-func (m *Dish) String() string { return proto.CompactTextString(m) }
-func (*Dish) ProtoMessage()    {}
+func (m *Lunch) Reset()         { *m = Lunch{} }
+func (m *Lunch) String() string { return proto.CompactTextString(m) }
+func (*Lunch) ProtoMessage()    {}
+
+type Dessert struct {
+	Name      string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Sweetness int32  `protobuf:"varint,2,opt,name=sweetness,proto3" json:"sweetness,omitempty"`
+}
+
+func (m *Dessert) Reset()         { *m = Dessert{} }
+func (m *Dessert) String() string { return proto.CompactTextString(m) }
+func (*Dessert) ProtoMessage()    {}
 
 func init() {
 	proto.RegisterType((*Menu)(nil), "flavortown.Menu")
 	proto.RegisterType((*LineItem)(nil), "flavortown.LineItem")
-	proto.RegisterType((*Dish)(nil), "flavortown.Dish")
+	proto.RegisterType((*Lunch)(nil), "flavortown.Lunch")
+	proto.RegisterType((*Dessert)(nil), "flavortown.Dessert")
 }
 func (this *Menu) Equal(that interface{}) bool {
 	if that == nil {
@@ -153,7 +249,13 @@ func (this *LineItem) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.Dish.Equal(that1.Dish) {
+	if that1.Dish == nil {
+		if this.Dish != nil {
+			return false
+		}
+	} else if this.Dish == nil {
+		return false
+	} else if !this.Dish.Equal(that1.Dish) {
 		return false
 	}
 	if this.PriceCents != that1.PriceCents {
@@ -167,7 +269,7 @@ func (this *LineItem) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *Dish) Equal(that interface{}) bool {
+func (this *LineItem_Lunch) Equal(that interface{}) bool {
 	if that == nil {
 		if this == nil {
 			return true
@@ -175,9 +277,69 @@ func (this *Dish) Equal(that interface{}) bool {
 		return false
 	}
 
-	that1, ok := that.(*Dish)
+	that1, ok := that.(*LineItem_Lunch)
 	if !ok {
-		that2, ok := that.(Dish)
+		that2, ok := that.(LineItem_Lunch)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Lunch.Equal(that1.Lunch) {
+		return false
+	}
+	return true
+}
+func (this *LineItem_Dessert) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*LineItem_Dessert)
+	if !ok {
+		that2, ok := that.(LineItem_Dessert)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if !this.Dessert.Equal(that1.Dessert) {
+		return false
+	}
+	return true
+}
+func (this *Lunch) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Lunch)
+	if !ok {
+		that2, ok := that.(Lunch)
 		if ok {
 			that1 = &that2
 		} else {
@@ -200,10 +362,45 @@ func (this *Dish) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *Dessert) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Dessert)
+	if !ok {
+		that2, ok := that.(Dessert)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.Name != that1.Name {
+		return false
+	}
+	if this.Sweetness != that1.Sweetness {
+		return false
+	}
+	return true
+}
 
 var GraphQLMenuType *github_com_graphql_go_graphql.Object
 var GraphQLLineItemType *github_com_graphql_go_graphql.Object
-var GraphQLDishType *github_com_graphql_go_graphql.Object
+var GraphQLLineItemDishUnion *github_com_graphql_go_graphql.Union
+var GraphQLLunchType *github_com_graphql_go_graphql.Object
+var GraphQLDessertType *github_com_graphql_go_graphql.Object
 
 func init() {
 	GraphQLMenuType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
@@ -215,11 +412,11 @@ func init() {
 					Type:        github_com_graphql_go_graphql.NewList(GraphQLLineItemType),
 					Description: "foo field description",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						obj, ok := p.Source.(*Menu)
-						if !ok {
-							return nil, fmt.Errorf("field items not resolved")
+						switch obj := p.Source.(type) {
+						case *Menu:
+							return obj.Items, nil
 						}
-						return obj.Items, nil
+						return nil, fmt.Errorf("field items not resolved")
 					},
 				},
 			}
@@ -230,82 +427,137 @@ func init() {
 		Description: "A line item representing a dish and price",
 		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
 			return github_com_graphql_go_graphql.Fields{
-				"dish": &github_com_graphql_go_graphql.Field{
-					Type:        GraphQLDishType,
-					Description: "foo field description",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						obj, ok := p.Source.(*LineItem)
-						if !ok {
-							return nil, fmt.Errorf("field dish not resolved")
-						}
-						return obj.Dish, nil
-					},
-				},
 				"price_cents": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_graphql_go_graphql.Int,
 					Description: "foo field description",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						obj, ok := p.Source.(*LineItem)
-						if !ok {
-							return nil, fmt.Errorf("field price_cents not resolved")
+						switch obj := p.Source.(type) {
+						case *LineItem:
+							return obj.PriceCents, nil
 						}
-						return obj.PriceCents, nil
+						return nil, fmt.Errorf("field price_cents not resolved")
 					},
 				},
 				"created_at": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 					Description: "foo field description",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						obj, ok := p.Source.(*LineItem)
-						if !ok {
-							return nil, fmt.Errorf("field created_at not resolved")
+						switch obj := p.Source.(type) {
+						case *LineItem:
+							return obj.CreatedAt, nil
 						}
-						return obj.CreatedAt, nil
+						return nil, fmt.Errorf("field created_at not resolved")
 					},
 				},
 				"updated_at": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 					Description: "foo field description",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						switch obj := p.Source.(type) {
+						case *LineItem:
+							return obj.UpdatedAt, nil
+						}
+						return nil, fmt.Errorf("field updated_at not resolved")
+					},
+				},
+				"dish": &github_com_graphql_go_graphql.Field{
+					Type:        GraphQLLineItemDishUnion,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if !ok {
-							return nil, fmt.Errorf("field updated_at not resolved")
+							return nil, fmt.Errorf("field dish not resolved")
 						}
-						return obj.UpdatedAt, nil
+						return obj.GetDish(), nil
 					},
 				},
 			}
 		}),
 	})
-	GraphQLDishType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "dish",
-		Description: "A delicious dish on the menu",
+	GraphQLLunchType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
+		Name:        "lunch",
+		Description: "A delicious lunch dish on the menu",
 		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
 			return github_com_graphql_go_graphql.Fields{
 				"name": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_graphql_go_graphql.String,
 					Description: "foo field description",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						obj, ok := p.Source.(*Dish)
-						if !ok {
-							return nil, fmt.Errorf("field name not resolved")
+						switch obj := p.Source.(type) {
+						case *Lunch:
+							return obj.Name, nil
+						case *LineItem_Lunch:
+							return obj.Lunch.Name, nil
 						}
-						return obj.Name, nil
+						return nil, fmt.Errorf("field name not resolved")
 					},
 				},
 				"description": &github_com_graphql_go_graphql.Field{
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 					Description: "foo field description",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						obj, ok := p.Source.(*Dish)
-						if !ok {
-							return nil, fmt.Errorf("field description not resolved")
+						switch obj := p.Source.(type) {
+						case *Lunch:
+							return obj.Description, nil
+						case *LineItem_Lunch:
+							return obj.Lunch.Description, nil
 						}
-						return obj.Description, nil
+						return nil, fmt.Errorf("field description not resolved")
 					},
 				},
 			}
 		}),
+	})
+	GraphQLDessertType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
+		Name:        "dessert",
+		Description: "A delicious dessert dish on the menu",
+		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
+			return github_com_graphql_go_graphql.Fields{
+				"name": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_graphql_go_graphql.String,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						switch obj := p.Source.(type) {
+						case *Dessert:
+							return obj.Name, nil
+						case *LineItem_Dessert:
+							return obj.Dessert.Name, nil
+						}
+						return nil, fmt.Errorf("field name not resolved")
+					},
+				},
+				"sweetness": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_graphql_go_graphql.Int,
+					Description: "foo field description",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						switch obj := p.Source.(type) {
+						case *Dessert:
+							return obj.Sweetness, nil
+						case *LineItem_Dessert:
+							return obj.Dessert.Sweetness, nil
+						}
+						return nil, fmt.Errorf("field sweetness not resolved")
+					},
+				},
+			}
+		}),
+	})
+	GraphQLLineItemDishUnion = github_com_graphql_go_graphql.NewUnion(github_com_graphql_go_graphql.UnionConfig{
+		Name:        "LineItemDish",
+		Description: "foo union description",
+		Types: []*github_com_graphql_go_graphql.Object{
+			GraphQLLunchType,
+			GraphQLDessertType,
+		},
+		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
+			switch value.(type) {
+			case *LineItem_Lunch:
+				return GraphQLLunchType
+			case *LineItem_Dessert:
+				return GraphQLDessertType
+			}
+			return nil
+		},
 	})
 }
 func NewPopulatedMenu(r randyFlavortown, easy bool) *Menu {
@@ -324,8 +576,12 @@ func NewPopulatedMenu(r randyFlavortown, easy bool) *Menu {
 
 func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 	this := &LineItem{}
-	if r.Intn(10) != 0 {
-		this.Dish = NewPopulatedDish(r, easy)
+	oneofNumber_Dish := []int32{100, 101}[r.Intn(2)]
+	switch oneofNumber_Dish {
+	case 100:
+		this.Dish = NewPopulatedLineItem_Lunch(r, easy)
+	case 101:
+		this.Dish = NewPopulatedLineItem_Dessert(r, easy)
 	}
 	this.PriceCents = int32(r.Int31())
 	if r.Intn(2) == 0 {
@@ -342,13 +598,35 @@ func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 	return this
 }
 
-func NewPopulatedDish(r randyFlavortown, easy bool) *Dish {
-	this := &Dish{}
+func NewPopulatedLineItem_Lunch(r randyFlavortown, easy bool) *LineItem_Lunch {
+	this := &LineItem_Lunch{}
+	this.Lunch = NewPopulatedLunch(r, easy)
+	return this
+}
+func NewPopulatedLineItem_Dessert(r randyFlavortown, easy bool) *LineItem_Dessert {
+	this := &LineItem_Dessert{}
+	this.Dessert = NewPopulatedDessert(r, easy)
+	return this
+}
+func NewPopulatedLunch(r randyFlavortown, easy bool) *Lunch {
+	this := &Lunch{}
 	this.Name = randStringFlavortown(r)
 	v2 := r.Intn(100)
 	this.Description = make([]byte, v2)
 	for i := 0; i < v2; i++ {
 		this.Description[i] = byte(r.Intn(256))
+	}
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedDessert(r randyFlavortown, easy bool) *Dessert {
+	this := &Dessert{}
+	this.Name = randStringFlavortown(r)
+	this.Sweetness = int32(r.Int31())
+	if r.Intn(2) == 0 {
+		this.Sweetness *= -1
 	}
 	if !easy && r.Intn(10) != 0 {
 	}
