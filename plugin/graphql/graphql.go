@@ -103,7 +103,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
-			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg.Use(), schemaPkg.Use()), `,`)
+			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg, schemaPkg), `,`)
 			p.P(`Description: "`, fieldGQL, `",`)
 			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
 			p.In()
@@ -198,21 +198,21 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.P(`}`)
 }
 
-func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.FieldDescriptorProto, pkgName, schemaPkgName string) string {
+func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.FieldDescriptorProto, pkgName, schemaPkgName generator.Single) string {
 	var gqltype string
 	switch field.GetType() {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE, descriptor.FieldDescriptorProto_TYPE_FLOAT:
-		gqltype = fmt.Sprint(pkgName, ".", "Float")
+		gqltype = fmt.Sprint(pkgName.Use(), ".", "Float")
 	case descriptor.FieldDescriptorProto_TYPE_INT64, descriptor.FieldDescriptorProto_TYPE_UINT64,
 		descriptor.FieldDescriptorProto_TYPE_INT32, descriptor.FieldDescriptorProto_TYPE_FIXED64,
 		descriptor.FieldDescriptorProto_TYPE_FIXED32, descriptor.FieldDescriptorProto_TYPE_SFIXED32,
 		descriptor.FieldDescriptorProto_TYPE_SFIXED64, descriptor.FieldDescriptorProto_TYPE_SINT32,
 		descriptor.FieldDescriptorProto_TYPE_SINT64:
-		gqltype = fmt.Sprint(pkgName, ".", "Int")
+		gqltype = fmt.Sprint(pkgName.Use(), ".", "Int")
 	case descriptor.FieldDescriptorProto_TYPE_BOOL:
-		gqltype = fmt.Sprint(pkgName, ".", "Boolean")
+		gqltype = fmt.Sprint(pkgName.Use(), ".", "Boolean")
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
-		gqltype = fmt.Sprint(pkgName, ".", "String")
+		gqltype = fmt.Sprint(pkgName.Use(), ".", "String")
 	case descriptor.FieldDescriptorProto_TYPE_GROUP:
 		panic("mapping a proto group type to graphql is unimplemented")
 	case descriptor.FieldDescriptorProto_TYPE_ENUM:
@@ -222,26 +222,26 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 		mobj := p.ObjectNamed(field.GetTypeName())
 		if mobj.PackageName() != message.PackageName() {
 			if field.GetTypeName() == "Timestamp" {
-				gqltype = fmt.Sprint(schemaPkgName, ".", "Timestamp")
+				gqltype = fmt.Sprint(schemaPkgName.Use(), ".", "Timestamp")
 				break
 			}
 
-			gqltype = fmt.Sprint(schemaPkgName, ".", "ByteString")
+			gqltype = fmt.Sprint(schemaPkgName.Use(), ".", "ByteString")
 			break
 		}
 		gqltype = graphQLTypeVarName(p.TypeName(mobj))
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
-		gqltype = fmt.Sprint(schemaPkgName, ".", "ByteString")
+		gqltype = fmt.Sprint(schemaPkgName.Use(), ".", "ByteString")
 	default:
 		panic("unknown proto field type")
 	}
 
 	if field.IsRepeated() {
-		gqltype = fmt.Sprint(pkgName, ".NewList(", gqltype, ")")
+		gqltype = fmt.Sprint(pkgName.Use(), ".NewList(", gqltype, ")")
 	}
 
 	if field.IsRequired() {
-		gqltype = fmt.Sprint(pkgName, ".NewNonNull(", gqltype, ")")
+		gqltype = fmt.Sprint(pkgName.Use(), ".NewNonNull(", gqltype, ")")
 	}
 
 	return gqltype
