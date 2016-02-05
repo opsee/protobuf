@@ -2,6 +2,7 @@ package flavortown
 
 import (
 	"github.com/graphql-go/graphql"
+	flavortown_dessert "github.com/opsee/protobuf/examples/dessert"
 	google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -20,7 +21,7 @@ func TestSchema(t *testing.T) {
 				UpdatedAt:  &google_protobuf.Timestamp{200, 200},
 			},
 			{
-				Dish: &LineItem_Dessert{&Dessert{
+				Dish: &LineItem_Dessert{&flavortown_dessert.Dessert{
 					Name:      "coolwhip",
 					Sweetness: 9,
 				}},

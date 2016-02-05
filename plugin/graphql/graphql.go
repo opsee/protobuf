@@ -114,7 +114,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.Out()
 			for _, oo := range p.oneofs {
 				for _, oneof := range oo.fields {
-					tname := p.TypeName(p.ObjectNamed(oneof.GetTypeName()))
+					tname := generator.CamelCaseSlice(p.ObjectNamed(oneof.GetTypeName()).TypeName())
 					if tname == ccTypeName {
 						p.P(`case *`, generator.CamelCaseSlice(oo.message.TypeName()), `_`, tname, `:`)
 						p.In()
@@ -180,10 +180,11 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 		p.In()
 		p.P(`switch value.(type) {`)
 		for _, field := range oo.fields {
-			tname := p.TypeName(p.ObjectNamed(field.GetTypeName()))
+			obj := p.ObjectNamed(field.GetTypeName())
+			tname := generator.CamelCaseSlice(obj.TypeName())
 			p.P(`case *`, ccTypeName, `_`, tname, `:`)
 			p.In()
-			p.P(`return `, graphQLTypeVarName(tname))
+			p.P(`return `, graphQLTypeVarName(p.TypeName(obj)))
 			p.Out()
 		}
 		p.P(`}`)
@@ -260,6 +261,10 @@ func oneofFields(message *generator.Descriptor, messageIndex, oneofIndex int) *o
 }
 
 func graphQLTypeVarName(typeName string) string {
+	tslice := strings.SplitN(typeName, ".", 2)
+	if len(tslice) > 1 {
+		return fmt.Sprint(tslice[0], ".GraphQL", tslice[1], "Type")
+	}
 	return fmt.Sprint("GraphQL", typeName, "Type")
 }
 

@@ -3,6 +3,7 @@ syntax = "proto3";
 import "github.com/opsee/protobuf/proto/google/protobuf/timestamp.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/opsee/protobuf/gogogqlproto/gogogql.proto";
+import "github.com/opsee/protobuf/examples/dessert/dessert.proto";
 
 package flavortown;
 
@@ -21,7 +22,7 @@ message LineItem {
     // A lunch dish
     Lunch lunch = 100;
     // A dessert dish
-    Dessert dessert = 101;
+    flavortown.dessert.Dessert dessert = 101;
   }
   // The price of the dish in cents
   int32 price_cents = 2;
@@ -39,10 +40,3 @@ message Lunch {
   bytes description = 2;
 }
 
-// A delicious dessert dish on the menu
-message Dessert {
-  // The name of the dish
-  string name = 1;
-  // How sweet is the dish, an integer between 0 and 10
-  int32 sweetness = 2;
-}
