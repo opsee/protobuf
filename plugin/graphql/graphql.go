@@ -24,10 +24,10 @@ type oneof struct {
 	oneofIndex   int
 }
 
-func init() {
-	generator.RegisterPlugin(NewGraphQL())
-}
-
+// func init() {
+// 	generator.RegisterPlugin(NewGraphQL())
+// }
+//
 func NewGraphQL() *graphql {
 	return &graphql{}
 }
@@ -261,11 +261,7 @@ func oneofFields(message *generator.Descriptor, messageIndex, oneofIndex int) *o
 }
 
 func graphQLTypeVarName(typeName string) string {
-	tslice := strings.SplitN(typeName, ".", 2)
-	if len(tslice) > 1 {
-		return fmt.Sprint(tslice[0], ".GraphQL", tslice[1], "Type")
-	}
-	return fmt.Sprint("GraphQL", typeName, "Type")
+	return fmt.Sprint(typeName, "Type")
 }
 
 func graphQLUnionName(message *generator.Descriptor, oneof *descriptor.OneofDescriptorProto) string {
@@ -273,7 +269,7 @@ func graphQLUnionName(message *generator.Descriptor, oneof *descriptor.OneofDesc
 }
 
 func graphQLUnionVarName(message *generator.Descriptor, oneof *descriptor.OneofDescriptorProto) string {
-	return fmt.Sprint("GraphQL", graphQLUnionName(message, oneof), "Union")
+	return fmt.Sprint(graphQLUnionName(message, oneof), "Union")
 }
 
 func snakeCase(in string) string {

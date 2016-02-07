@@ -3,7 +3,7 @@
 // DO NOT EDIT!
 
 /*
-Package flavortown_dessert is a generated protocol buffer package.
+Package dessert is a generated protocol buffer package.
 
 It is generated from these files:
 	dessert.proto
@@ -11,7 +11,7 @@ It is generated from these files:
 It has these top-level messages:
 	Dessert
 */
-package flavortown_dessert
+package dessert
 
 import testing "testing"
 import math_rand "math/rand"
@@ -103,16 +103,6 @@ func TestDessertProtoCompactText(t *testing.T) {
 	}
 	if !p.Equal(msg) {
 		t.Fatalf("seed = %d, %#v !Proto %#v", seed, msg, p)
-	}
-}
-
-func TestDessertGraphQL(t *testing.T) {
-	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	_ = NewPopulatedDessert(popr, false)
-	objdesc := "A delicious dessert dish on the menu"
-	pdesc := GraphQLDessertType.PrivateDescription
-	if pdesc != objdesc {
-		t.Fatalf("String want %v got %v", objdesc, pdesc)
 	}
 }
 

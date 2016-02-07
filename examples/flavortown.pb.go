@@ -3,7 +3,7 @@
 // DO NOT EDIT!
 
 /*
-Package flavortown is a generated protocol buffer package.
+Package examples is a generated protocol buffer package.
 
 It is generated from these files:
 	flavortown.proto
@@ -13,7 +13,7 @@ It has these top-level messages:
 	LineItem
 	Lunch
 */
-package flavortown
+package examples
 
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
@@ -24,9 +24,6 @@ import _ "github.com/opsee/protobuf/gogogqlproto"
 import flavortown_dessert "github.com/opsee/protobuf/examples/dessert"
 
 import bytes "bytes"
-
-import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
-import github_com_opsee_protobuf_gogogqlproto "github.com/opsee/protobuf/gogogqlproto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -362,136 +359,6 @@ func (this *Lunch) Equal(that interface{}) bool {
 		return false
 	}
 	return true
-}
-
-var GraphQLMenuType *github_com_graphql_go_graphql.Object
-var GraphQLLineItemType *github_com_graphql_go_graphql.Object
-var GraphQLLineItemDishUnion *github_com_graphql_go_graphql.Union
-var GraphQLLunchType *github_com_graphql_go_graphql.Object
-
-func init() {
-	GraphQLMenuType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "menu",
-		Description: "The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors",
-		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
-			return github_com_graphql_go_graphql.Fields{
-				"items": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_graphql_go_graphql.NewList(GraphQLLineItemType),
-					Description: "These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Menu:
-							return obj.Items, nil
-						}
-						return nil, fmt.Errorf("field items not resolved")
-					},
-				},
-			}
-		}),
-	})
-	GraphQLLineItemType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "line_item",
-		Description: "A line item representing a dish and price",
-		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
-			return github_com_graphql_go_graphql.Fields{
-				"price_cents": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_graphql_go_graphql.Int,
-					Description: "The price of the dish in cents",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *LineItem:
-							return obj.PriceCents, nil
-						}
-						return nil, fmt.Errorf("field price_cents not resolved")
-					},
-				},
-				"created_at": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-					Description: "A timestamp representing when the dish was added to the menu",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *LineItem:
-							return obj.CreatedAt, nil
-						}
-						return nil, fmt.Errorf("field created_at not resolved")
-					},
-				},
-				"updated_at": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-					Description: "A timestamp representing when the dish was updated",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *LineItem:
-							return obj.UpdatedAt, nil
-						}
-						return nil, fmt.Errorf("field updated_at not resolved")
-					},
-				},
-				"dish": &github_com_graphql_go_graphql.Field{
-					Type:        GraphQLLineItemDishUnion,
-					Description: "The menu dish, can either be lunch or dessert",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						obj, ok := p.Source.(*LineItem)
-						if !ok {
-							return nil, fmt.Errorf("field dish not resolved")
-						}
-						return obj.GetDish(), nil
-					},
-				},
-			}
-		}),
-	})
-	GraphQLLunchType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "lunch",
-		Description: "A delicious lunch dish on the menu",
-		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
-			return github_com_graphql_go_graphql.Fields{
-				"name": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_graphql_go_graphql.String,
-					Description: "The name of the dish",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Lunch:
-							return obj.Name, nil
-						case *LineItem_Lunch:
-							return obj.Lunch.Name, nil
-						}
-						return nil, fmt.Errorf("field name not resolved")
-					},
-				},
-				"description": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
-					Description: "The description of the dish",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Lunch:
-							return obj.Description, nil
-						case *LineItem_Lunch:
-							return obj.Lunch.Description, nil
-						}
-						return nil, fmt.Errorf("field description not resolved")
-					},
-				},
-			}
-		}),
-	})
-	GraphQLLineItemDishUnion = github_com_graphql_go_graphql.NewUnion(github_com_graphql_go_graphql.UnionConfig{
-		Name:        "LineItemDish",
-		Description: "The menu dish, can either be lunch or dessert",
-		Types: []*github_com_graphql_go_graphql.Object{
-			GraphQLLunchType,
-			flavortown_dessert.GraphQLDessertType,
-		},
-		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
-			switch value.(type) {
-			case *LineItem_Lunch:
-				return GraphQLLunchType
-			case *LineItem_Dessert:
-				return flavortown_dessert.GraphQLDessertType
-			}
-			return nil
-		},
-	})
 }
 func NewPopulatedMenu(r randyFlavortown, easy bool) *Menu {
 	this := &Menu{}
