@@ -75,6 +75,10 @@ func (this *Dessert) Equal(that interface{}) bool {
 	return true
 }
 
+type DessertGetter interface {
+	GetDessert() *Dessert
+}
+
 var GraphQLDessertType *github_com_graphql_go_graphql.Object
 
 func init() {
@@ -87,9 +91,13 @@ func init() {
 					Type:        github_com_graphql_go_graphql.String,
 					Description: "The name of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Dessert:
+						obj, ok := p.Source.(*Dessert)
+						if ok {
 							return obj.Name, nil
+						}
+						inter, ok := p.Source.(DessertGetter)
+						if ok {
+							return inter.GetDessert().Name, nil
 						}
 						return nil, fmt.Errorf("field name not resolved")
 					},
@@ -98,9 +106,13 @@ func init() {
 					Type:        github_com_graphql_go_graphql.Int,
 					Description: "How sweet is the dish, an integer between 0 and 10",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Dessert:
+						obj, ok := p.Source.(*Dessert)
+						if ok {
 							return obj.Sweetness, nil
+						}
+						inter, ok := p.Source.(DessertGetter)
+						if ok {
+							return inter.GetDessert().Sweetness, nil
 						}
 						return nil, fmt.Errorf("field sweetness not resolved")
 					},

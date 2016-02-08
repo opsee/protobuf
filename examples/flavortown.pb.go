@@ -27,7 +27,6 @@ import bytes "bytes"
 
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
 import github_com_opsee_protobuf_gogogqlproto "github.com/opsee/protobuf/gogogqlproto"
-import github_com_davecgh_go_spew_spew "github.com/davecgh/go-spew/spew"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -365,10 +364,31 @@ func (this *Lunch) Equal(that interface{}) bool {
 	return true
 }
 
+type MenuGetter interface {
+	GetMenu() *Menu
+}
+
 var GraphQLMenuType *github_com_graphql_go_graphql.Object
+
+type LineItemGetter interface {
+	GetLineItem() *LineItem
+}
+
 var GraphQLLineItemType *github_com_graphql_go_graphql.Object
 var GraphQLLineItemDishUnion *github_com_graphql_go_graphql.Union
+
+type LunchGetter interface {
+	GetLunch() *Lunch
+}
+
 var GraphQLLunchType *github_com_graphql_go_graphql.Object
+
+func (g *LineItem_Lunch) GetLunch() *Lunch {
+	return g.Lunch
+}
+func (g *LineItem_Dessert) GetDessert() *flavortown_dessert.Dessert {
+	return g.Dessert
+}
 
 func init() {
 	GraphQLMenuType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
@@ -380,9 +400,13 @@ func init() {
 					Type:        github_com_graphql_go_graphql.NewList(GraphQLLineItemType),
 					Description: "These dishes are crafted with the heart and soul of hometown favorites and infused with Guy’s big, daring flavors",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Menu:
+						obj, ok := p.Source.(*Menu)
+						if ok {
 							return obj.Items, nil
+						}
+						inter, ok := p.Source.(MenuGetter)
+						if ok {
+							return inter.GetMenu().Items, nil
 						}
 						return nil, fmt.Errorf("field items not resolved")
 					},
@@ -399,9 +423,13 @@ func init() {
 					Type:        github_com_graphql_go_graphql.Int,
 					Description: "The price of the dish in cents",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *LineItem:
+						obj, ok := p.Source.(*LineItem)
+						if ok {
 							return obj.PriceCents, nil
+						}
+						inter, ok := p.Source.(LineItemGetter)
+						if ok {
+							return inter.GetLineItem().PriceCents, nil
 						}
 						return nil, fmt.Errorf("field price_cents not resolved")
 					},
@@ -410,9 +438,13 @@ func init() {
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 					Description: "A timestamp representing when the dish was added to the menu",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *LineItem:
+						obj, ok := p.Source.(*LineItem)
+						if ok {
 							return obj.CreatedAt, nil
+						}
+						inter, ok := p.Source.(LineItemGetter)
+						if ok {
+							return inter.GetLineItem().CreatedAt, nil
 						}
 						return nil, fmt.Errorf("field created_at not resolved")
 					},
@@ -421,9 +453,13 @@ func init() {
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 					Description: "A timestamp representing when the dish was updated",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *LineItem:
+						obj, ok := p.Source.(*LineItem)
+						if ok {
 							return obj.UpdatedAt, nil
+						}
+						inter, ok := p.Source.(LineItemGetter)
+						if ok {
+							return inter.GetLineItem().UpdatedAt, nil
 						}
 						return nil, fmt.Errorf("field updated_at not resolved")
 					},
@@ -451,12 +487,13 @@ func init() {
 					Type:        github_com_graphql_go_graphql.String,
 					Description: "The name of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Lunch:
+						obj, ok := p.Source.(*Lunch)
+						if ok {
 							return obj.Name, nil
-						case *LineItem_Lunch:
-							github_com_davecgh_go_spew_spew.Dump(p)
-							return obj.Lunch.Name, nil
+						}
+						inter, ok := p.Source.(LunchGetter)
+						if ok {
+							return inter.GetLunch().Name, nil
 						}
 						return nil, fmt.Errorf("field name not resolved")
 					},
@@ -465,12 +502,13 @@ func init() {
 					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
 					Description: "The description of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Lunch:
+						obj, ok := p.Source.(*Lunch)
+						if ok {
 							return obj.Description, nil
-						case *LineItem_Lunch:
-							github_com_davecgh_go_spew_spew.Dump(p)
-							return obj.Lunch.Description, nil
+						}
+						inter, ok := p.Source.(LunchGetter)
+						if ok {
+							return inter.GetLunch().Description, nil
 						}
 						return nil, fmt.Errorf("field description not resolved")
 					},
@@ -483,14 +521,14 @@ func init() {
 		Description: "The menu dish, can either be lunch or dessert",
 		Types: []*github_com_graphql_go_graphql.Object{
 			GraphQLLunchType,
-			GraphQLflavortown_dessert.DessertType,
+			flavortown_dessert.GraphQLDessertType,
 		},
 		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
 			switch value.(type) {
 			case *LineItem_Lunch:
 				return GraphQLLunchType
-			case *LineItem_flavortown_dessert.Dessert:
-				return GraphQLflavortown_dessert.DessertType
+			case *LineItem_Dessert:
+				return flavortown_dessert.GraphQLDessertType
 			}
 			return nil
 		},
