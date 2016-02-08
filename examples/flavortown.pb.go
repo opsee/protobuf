@@ -56,7 +56,7 @@ type LineItem struct {
 	//
 	// Types that are valid to be assigned to Dish:
 	//	*LineItem_Lunch
-	//	*LineItem_Dessert
+	//	*LineItem_TastyDessert
 	Dish isLineItem_Dish `protobuf_oneof:"dish"`
 	// The price of the dish in cents
 	PriceCents int32 `protobuf:"varint,2,opt,name=price_cents,proto3" json:"price_cents,omitempty"`
@@ -78,12 +78,12 @@ type isLineItem_Dish interface {
 type LineItem_Lunch struct {
 	Lunch *Lunch `protobuf:"bytes,100,opt,name=lunch,oneof"`
 }
-type LineItem_Dessert struct {
-	Dessert *flavortown_dessert.Dessert `protobuf:"bytes,101,opt,name=dessert,oneof"`
+type LineItem_TastyDessert struct {
+	TastyDessert *flavortown_dessert.Dessert `protobuf:"bytes,101,opt,name=tasty_dessert,oneof"`
 }
 
-func (*LineItem_Lunch) isLineItem_Dish()   {}
-func (*LineItem_Dessert) isLineItem_Dish() {}
+func (*LineItem_Lunch) isLineItem_Dish()        {}
+func (*LineItem_TastyDessert) isLineItem_Dish() {}
 
 func (m *LineItem) GetDish() isLineItem_Dish {
 	if m != nil {
@@ -99,9 +99,9 @@ func (m *LineItem) GetLunch() *Lunch {
 	return nil
 }
 
-func (m *LineItem) GetDessert() *flavortown_dessert.Dessert {
-	if x, ok := m.GetDish().(*LineItem_Dessert); ok {
-		return x.Dessert
+func (m *LineItem) GetTastyDessert() *flavortown_dessert.Dessert {
+	if x, ok := m.GetDish().(*LineItem_TastyDessert); ok {
+		return x.TastyDessert
 	}
 	return nil
 }
@@ -124,7 +124,7 @@ func (m *LineItem) GetUpdatedAt() *google_protobuf.Timestamp {
 func (*LineItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), []interface{}) {
 	return _LineItem_OneofMarshaler, _LineItem_OneofUnmarshaler, []interface{}{
 		(*LineItem_Lunch)(nil),
-		(*LineItem_Dessert)(nil),
+		(*LineItem_TastyDessert)(nil),
 	}
 }
 
@@ -137,9 +137,9 @@ func _LineItem_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
 		if err := b.EncodeMessage(x.Lunch); err != nil {
 			return err
 		}
-	case *LineItem_Dessert:
+	case *LineItem_TastyDessert:
 		_ = b.EncodeVarint(101<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Dessert); err != nil {
+		if err := b.EncodeMessage(x.TastyDessert); err != nil {
 			return err
 		}
 	case nil:
@@ -160,13 +160,13 @@ func _LineItem_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffe
 		err := b.DecodeMessage(msg)
 		m.Dish = &LineItem_Lunch{msg}
 		return true, err
-	case 101: // dish.dessert
+	case 101: // dish.tasty_dessert
 		if wire != proto.WireBytes {
 			return true, proto.ErrInternalBadWireType
 		}
 		msg := new(flavortown_dessert.Dessert)
 		err := b.DecodeMessage(msg)
-		m.Dish = &LineItem_Dessert{msg}
+		m.Dish = &LineItem_TastyDessert{msg}
 		return true, err
 	default:
 		return false, nil
@@ -300,7 +300,7 @@ func (this *LineItem_Lunch) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *LineItem_Dessert) Equal(that interface{}) bool {
+func (this *LineItem_TastyDessert) Equal(that interface{}) bool {
 	if that == nil {
 		if this == nil {
 			return true
@@ -308,9 +308,9 @@ func (this *LineItem_Dessert) Equal(that interface{}) bool {
 		return false
 	}
 
-	that1, ok := that.(*LineItem_Dessert)
+	that1, ok := that.(*LineItem_TastyDessert)
 	if !ok {
-		that2, ok := that.(LineItem_Dessert)
+		that2, ok := that.(LineItem_TastyDessert)
 		if ok {
 			that1 = &that2
 		} else {
@@ -325,7 +325,7 @@ func (this *LineItem_Dessert) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.Dessert.Equal(that1.Dessert) {
+	if !this.TastyDessert.Equal(that1.TastyDessert) {
 		return false
 	}
 	return true
@@ -386,8 +386,8 @@ var GraphQLLunchType *github_com_graphql_go_graphql.Object
 func (g *LineItem_Lunch) GetLunch() *Lunch {
 	return g.Lunch
 }
-func (g *LineItem_Dessert) GetDessert() *flavortown_dessert.Dessert {
-	return g.Dessert
+func (g *LineItem_TastyDessert) GetDessert() *flavortown_dessert.Dessert {
+	return g.TastyDessert
 }
 
 func init() {
@@ -527,7 +527,7 @@ func init() {
 			switch value.(type) {
 			case *LineItem_Lunch:
 				return GraphQLLunchType
-			case *LineItem_Dessert:
+			case *LineItem_TastyDessert:
 				return flavortown_dessert.GraphQLDessertType
 			}
 			return nil
@@ -555,7 +555,7 @@ func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 	case 100:
 		this.Dish = NewPopulatedLineItem_Lunch(r, easy)
 	case 101:
-		this.Dish = NewPopulatedLineItem_Dessert(r, easy)
+		this.Dish = NewPopulatedLineItem_TastyDessert(r, easy)
 	}
 	this.PriceCents = int32(r.Int31())
 	if r.Intn(2) == 0 {
@@ -577,9 +577,9 @@ func NewPopulatedLineItem_Lunch(r randyFlavortown, easy bool) *LineItem_Lunch {
 	this.Lunch = NewPopulatedLunch(r, easy)
 	return this
 }
-func NewPopulatedLineItem_Dessert(r randyFlavortown, easy bool) *LineItem_Dessert {
-	this := &LineItem_Dessert{}
-	this.Dessert = flavortown_dessert.NewPopulatedDessert(r, easy)
+func NewPopulatedLineItem_TastyDessert(r randyFlavortown, easy bool) *LineItem_TastyDessert {
+	this := &LineItem_TastyDessert{}
+	this.TastyDessert = flavortown_dessert.NewPopulatedDessert(r, easy)
 	return this
 }
 func NewPopulatedLunch(r randyFlavortown, easy bool) *Lunch {

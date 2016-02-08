@@ -82,7 +82,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.oneofs[field] = oneofFields(message, mi, i)
 		}
 	}
-	
+
 	// getter funcs for oneof fields
 	for _, oo := range p.oneofs {
 		ccTypeName := generator.CamelCaseSlice(oo.message.TypeName())
@@ -91,9 +91,11 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 		for _, field := range oo.fields {
 			obj := p.ObjectNamed(field.GetTypeName())
 			tname := generator.CamelCaseSlice(obj.TypeName())
-			p.P(`func (g *`, ccTypeName, `_`, tname, `) Get`, tname, `() *`, p.TypeName(obj), ` {`)
+			fname := generator.CamelCase(field.GetName())
+
+			p.P(`func (g *`, ccTypeName, `_`, fname, `) Get`, tname, `() *`, p.TypeName(obj), ` {`)
 			p.In()
-			p.P(`return g.`, tname)
+			p.P(`return g.`, fname)
 			p.Out()
 			p.P(`}`)
 		}
@@ -199,8 +201,9 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 		p.P(`switch value.(type) {`)
 		for _, field := range oo.fields {
 			obj := p.ObjectNamed(field.GetTypeName())
-			tname := generator.CamelCaseSlice(obj.TypeName())
-			p.P(`case *`, ccTypeName, `_`, tname, `:`)
+			fname := generator.CamelCase(field.GetName())
+
+			p.P(`case *`, ccTypeName, `_`, fname, `:`)
 			p.In()
 			p.P(`return `, p.graphQLTypeVarName(obj))
 			p.Out()
