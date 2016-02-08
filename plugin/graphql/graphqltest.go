@@ -47,7 +47,7 @@ func (p *test) Generate(imports generator.PluginImports, file *generator.FileDes
 			p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
 			p.P(`_ = NewPopulated`, ccTypeName, `(popr, false)`)
 			p.P(`objdesc := "`, messageGQL, `"`)
-			p.P(`pdesc := `, graphQLTypeVarName(ccTypeName), `.PrivateDescription`)
+			p.P(`pdesc := `, p.graphQLTypeVarName(message), `.PrivateDescription`)
 			p.P(`if pdesc != objdesc {`)
 			p.In()
 			p.P(`t.Fatalf("String want %v got %v", objdesc, pdesc)`)
@@ -59,4 +59,8 @@ func (p *test) Generate(imports generator.PluginImports, file *generator.FileDes
 
 	}
 	return used
+}
+
+func (p *test) graphQLTypeVarName(obj generator.Object) string {
+	return fmt.Sprint(p.DefaultPackageName(obj), "GraphQL", generator.CamelCaseSlice(obj.TypeName()), "Type")
 }
