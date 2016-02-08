@@ -22,7 +22,7 @@ message LineItem {
     // A lunch dish
     Lunch lunch = 100;
     // A dessert dish
-    flavortown.dessert.Dessert dessert = 101;
+    flavortown.dessert.Dessert tasty_dessert = 101;
   }
   // The price of the dish in cents
   int32 price_cents = 2;
