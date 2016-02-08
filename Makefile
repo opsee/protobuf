@@ -11,10 +11,10 @@ docker: clean VANITY_DIR
 	docker build -t quay.io/opsee/build-go:gogoopsee .
 
 PROTO_DIR:
-	docker run --rm -it -v $$(pwd):/build/src quay.io/opsee/build-go:gogoopsee /bin/bash -c 'cd /build/src/$(PROTO_DIR) && make && export GOPATH="$$GOPATH:/build" && go get -t ./... && go test -v ./...'
+	docker run --rm -it -v $$(pwd):/gopath/src/github.com/opsee/protobuf quay.io/opsee/build-go:gogoopsee /bin/bash -c 'cd /gopath/src/github.com/opsee/protobuf/$(PROTO_DIR) && make && go get -t ./... && go test -v ./...'
 
 EXAMPLE_DIR: docker PROTO_DIR
-	docker run --rm -it -v $$(pwd):/build/src quay.io/opsee/build-go:gogoopsee /bin/bash -c 'cd /build/src/$(EXAMPLE_DIR) && make generate && export GOPATH="$$GOPATH:/build" && go get -t ./... && go test -v ./...'
+	docker run --rm -it -v $$(pwd):/gopath/src/github.com/opsee/protobuf quay.io/opsee/build-go:gogoopsee /bin/bash -c 'cd /gopath/src/github.com/opsee/protobuf/$(EXAMPLE_DIR) && make generate && go get -t ./... && go test -v ./...'
 
 push:
 	docker push quay.io/opsee/build-go:gogoopsee
