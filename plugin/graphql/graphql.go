@@ -52,6 +52,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	graphQLPkg := p.NewImport("github.com/graphql-go/graphql")
 	schemaPkg := p.NewImport("github.com/opsee/protobuf/gogogqlproto")
 	fmtPkg := p.NewImport("fmt")
+	spewPkg := p.NewImport("github.com/davecgh/go-spew/spew")
 
 	for mi, message := range file.Messages() {
 		if message.DescriptorProto.GetOptions().GetMapEntry() {
@@ -118,6 +119,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 					if tname == ccTypeName {
 						p.P(`case *`, generator.CamelCaseSlice(oo.message.TypeName()), `_`, tname, `:`)
 						p.In()
+						p.P(spewPkg.Use(), `.Dump(p)`)
 						p.P(`return obj.`, tname, `.`, p.GetFieldName(message, field), `, nil`)
 						p.Out()
 					}

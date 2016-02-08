@@ -12,7 +12,6 @@ It has these top-level messages:
 	Menu
 	LineItem
 	Lunch
-	Dessert
 */
 package flavortown
 
@@ -22,11 +21,13 @@ import math "math"
 import google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/gogogqlproto"
+import flavortown_dessert "github.com/opsee/protobuf/examples/dessert"
 
 import bytes "bytes"
 
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
 import github_com_opsee_protobuf_gogogqlproto "github.com/opsee/protobuf/gogogqlproto"
+import github_com_davecgh_go_spew_spew "github.com/davecgh/go-spew/spew"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -79,7 +80,7 @@ type LineItem_Lunch struct {
 	Lunch *Lunch `protobuf:"bytes,100,opt,name=lunch,oneof"`
 }
 type LineItem_Dessert struct {
-	Dessert *Dessert `protobuf:"bytes,101,opt,name=dessert,oneof"`
+	Dessert *flavortown_dessert.Dessert `protobuf:"bytes,101,opt,name=dessert,oneof"`
 }
 
 func (*LineItem_Lunch) isLineItem_Dish()   {}
@@ -99,7 +100,7 @@ func (m *LineItem) GetLunch() *Lunch {
 	return nil
 }
 
-func (m *LineItem) GetDessert() *Dessert {
+func (m *LineItem) GetDessert() *flavortown_dessert.Dessert {
 	if x, ok := m.GetDish().(*LineItem_Dessert); ok {
 		return x.Dessert
 	}
@@ -164,7 +165,7 @@ func _LineItem_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffe
 		if wire != proto.WireBytes {
 			return true, proto.ErrInternalBadWireType
 		}
-		msg := new(Dessert)
+		msg := new(flavortown_dessert.Dessert)
 		err := b.DecodeMessage(msg)
 		m.Dish = &LineItem_Dessert{msg}
 		return true, err
@@ -185,23 +186,10 @@ func (m *Lunch) Reset()         { *m = Lunch{} }
 func (m *Lunch) String() string { return proto.CompactTextString(m) }
 func (*Lunch) ProtoMessage()    {}
 
-// A delicious dessert dish on the menu
-type Dessert struct {
-	// The name of the dish
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// How sweet is the dish, an integer between 0 and 10
-	Sweetness int32 `protobuf:"varint,2,opt,name=sweetness,proto3" json:"sweetness,omitempty"`
-}
-
-func (m *Dessert) Reset()         { *m = Dessert{} }
-func (m *Dessert) String() string { return proto.CompactTextString(m) }
-func (*Dessert) ProtoMessage()    {}
-
 func init() {
 	proto.RegisterType((*Menu)(nil), "flavortown.Menu")
 	proto.RegisterType((*LineItem)(nil), "flavortown.LineItem")
 	proto.RegisterType((*Lunch)(nil), "flavortown.Lunch")
-	proto.RegisterType((*Dessert)(nil), "flavortown.Dessert")
 }
 func (this *Menu) Equal(that interface{}) bool {
 	if that == nil {
@@ -376,45 +364,11 @@ func (this *Lunch) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *Dessert) Equal(that interface{}) bool {
-	if that == nil {
-		if this == nil {
-			return true
-		}
-		return false
-	}
-
-	that1, ok := that.(*Dessert)
-	if !ok {
-		that2, ok := that.(Dessert)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		if this == nil {
-			return true
-		}
-		return false
-	} else if this == nil {
-		return false
-	}
-	if this.Name != that1.Name {
-		return false
-	}
-	if this.Sweetness != that1.Sweetness {
-		return false
-	}
-	return true
-}
 
 var GraphQLMenuType *github_com_graphql_go_graphql.Object
 var GraphQLLineItemType *github_com_graphql_go_graphql.Object
 var GraphQLLineItemDishUnion *github_com_graphql_go_graphql.Union
 var GraphQLLunchType *github_com_graphql_go_graphql.Object
-var GraphQLDessertType *github_com_graphql_go_graphql.Object
 
 func init() {
 	GraphQLMenuType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
@@ -501,6 +455,7 @@ func init() {
 						case *Lunch:
 							return obj.Name, nil
 						case *LineItem_Lunch:
+							github_com_davecgh_go_spew_spew.Dump(p)
 							return obj.Lunch.Name, nil
 						}
 						return nil, fmt.Errorf("field name not resolved")
@@ -514,43 +469,10 @@ func init() {
 						case *Lunch:
 							return obj.Description, nil
 						case *LineItem_Lunch:
+							github_com_davecgh_go_spew_spew.Dump(p)
 							return obj.Lunch.Description, nil
 						}
 						return nil, fmt.Errorf("field description not resolved")
-					},
-				},
-			}
-		}),
-	})
-	GraphQLDessertType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "dessert",
-		Description: "A delicious dessert dish on the menu",
-		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
-			return github_com_graphql_go_graphql.Fields{
-				"name": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_graphql_go_graphql.String,
-					Description: "The name of the dish",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Dessert:
-							return obj.Name, nil
-						case *LineItem_Dessert:
-							return obj.Dessert.Name, nil
-						}
-						return nil, fmt.Errorf("field name not resolved")
-					},
-				},
-				"sweetness": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_graphql_go_graphql.Int,
-					Description: "How sweet is the dish, an integer between 0 and 10",
-					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
-						switch obj := p.Source.(type) {
-						case *Dessert:
-							return obj.Sweetness, nil
-						case *LineItem_Dessert:
-							return obj.Dessert.Sweetness, nil
-						}
-						return nil, fmt.Errorf("field sweetness not resolved")
 					},
 				},
 			}
@@ -561,14 +483,14 @@ func init() {
 		Description: "The menu dish, can either be lunch or dessert",
 		Types: []*github_com_graphql_go_graphql.Object{
 			GraphQLLunchType,
-			GraphQLDessertType,
+			GraphQLflavortown_dessert.DessertType,
 		},
 		ResolveType: func(value interface{}, info github_com_graphql_go_graphql.ResolveInfo) *github_com_graphql_go_graphql.Object {
 			switch value.(type) {
 			case *LineItem_Lunch:
 				return GraphQLLunchType
-			case *LineItem_Dessert:
-				return GraphQLDessertType
+			case *LineItem_flavortown_dessert.Dessert:
+				return GraphQLflavortown_dessert.DessertType
 			}
 			return nil
 		},
@@ -619,7 +541,7 @@ func NewPopulatedLineItem_Lunch(r randyFlavortown, easy bool) *LineItem_Lunch {
 }
 func NewPopulatedLineItem_Dessert(r randyFlavortown, easy bool) *LineItem_Dessert {
 	this := &LineItem_Dessert{}
-	this.Dessert = NewPopulatedDessert(r, easy)
+	this.Dessert = flavortown_dessert.NewPopulatedDessert(r, easy)
 	return this
 }
 func NewPopulatedLunch(r randyFlavortown, easy bool) *Lunch {
@@ -629,18 +551,6 @@ func NewPopulatedLunch(r randyFlavortown, easy bool) *Lunch {
 	this.Description = make([]byte, v2)
 	for i := 0; i < v2; i++ {
 		this.Description[i] = byte(r.Intn(256))
-	}
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
-func NewPopulatedDessert(r randyFlavortown, easy bool) *Dessert {
-	this := &Dessert{}
-	this.Name = randStringFlavortown(r)
-	this.Sweetness = int32(r.Int31())
-	if r.Intn(2) == 0 {
-		this.Sweetness *= -1
 	}
 	if !easy && r.Intn(10) != 0 {
 	}

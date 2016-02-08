@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/opsee/protobuf/gogogqlproto/gogogql.proto";
+
+package flavortown.dessert;
+
+option (gogogqlproto.graphql) = true;
+
+
+// A delicious dessert dish on the menu
+message Dessert {
+  // The name of the dish
+  string name = 1;
+  // How sweet is the dish, an integer between 0 and 10
+  int32 sweetness = 2;
+}
