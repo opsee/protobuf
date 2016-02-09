@@ -83,7 +83,7 @@ var GraphQLDessertType *github_com_graphql_go_graphql.Object
 
 func init() {
 	GraphQLDessertType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "dessert",
+		Name:        "flavortown_dessertDessert",
 		Description: "A delicious dessert dish on the menu",
 		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
 			return github_com_graphql_go_graphql.Fields{

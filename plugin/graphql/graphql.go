@@ -108,11 +108,10 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	for mi, message := range p.messages {
 		messageGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d", mi)))
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
-		typeName := snakeCase(strings.Join(message.TypeName(), "_"))
 
 		p.P(p.graphQLTypeVarName(message), ` = `, graphQLPkg.Use(), `.NewObject(`, graphQLPkg.Use(), `.ObjectConfig{`)
 		p.In()
-		p.P(`Name:        "`, typeName, `",`)
+		p.P(`Name:        "`, p.TypeNameWithPackage(message), `",`)
 		p.P(`Description: "`, messageGQL, `",`)
 		p.P(`Fields: (`, graphQLPkg.Use(), `.FieldsThunk)(func() `, graphQLPkg.Use(), `.Fields {`)
 		p.In()

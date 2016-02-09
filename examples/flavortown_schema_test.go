@@ -54,11 +54,11 @@ func TestSchema(t *testing.T) {
 		menu {
 			items {
 				dish {
-					... on lunch {
+					... on flavortownLunch {
 						name
 						description
 					}
-					... on dessert {
+					... on flavortown_dessertDessert {
 						name
 						sweetness
 					}

@@ -392,7 +392,7 @@ func (g *LineItem_TastyDessert) GetDessert() *flavortown_dessert.Dessert {
 
 func init() {
 	GraphQLMenuType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "menu",
+		Name:        "flavortownMenu",
 		Description: "The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors",
 		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
 			return github_com_graphql_go_graphql.Fields{
@@ -415,7 +415,7 @@ func init() {
 		}),
 	})
 	GraphQLLineItemType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "line_item",
+		Name:        "flavortownLineItem",
 		Description: "A line item representing a dish and price",
 		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
 			return github_com_graphql_go_graphql.Fields{
@@ -479,7 +479,7 @@ func init() {
 		}),
 	})
 	GraphQLLunchType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
-		Name:        "lunch",
+		Name:        "flavortownLunch",
 		Description: "A delicious lunch dish on the menu",
 		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
 			return github_com_graphql_go_graphql.Fields{
