@@ -440,11 +440,11 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							return obj.CreatedAt, nil
+							return obj.GetCreatedAt(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
-							return inter.GetLineItem().CreatedAt, nil
+							return inter.GetLineItem().GetCreatedAt(), nil
 						}
 						return nil, fmt.Errorf("field created_at not resolved")
 					},
@@ -455,11 +455,11 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							return obj.UpdatedAt, nil
+							return obj.GetUpdatedAt(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
-							return inter.GetLineItem().UpdatedAt, nil
+							return inter.GetLineItem().GetUpdatedAt(), nil
 						}
 						return nil, fmt.Errorf("field updated_at not resolved")
 					},

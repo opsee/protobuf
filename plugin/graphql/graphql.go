@@ -123,7 +123,11 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 				continue
 			}
 
-			fieldGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,2,%d", mi, fi)))
+			var (
+				fieldGQL = strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,2,%d", mi, fi)))
+				gtype, _ = p.GoType(message, field)
+				hasStar  = strings.Index(gtype, "*") == 0
+			)
 
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
@@ -134,13 +138,25 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.P(`obj, ok := p.Source.(*`, ccTypeName, `)`)
 			p.P(`if ok {`)
 			p.In()
-			p.P(`return obj.`, p.GetFieldName(message, field), `, nil`)
+
+			if hasStar {
+				p.P(`return obj.Get`, p.GetFieldName(message, field), `(), nil`)
+			} else {
+				p.P(`return obj.`, p.GetFieldName(message, field), `, nil`)
+			}
+
 			p.Out()
 			p.P(`}`)
 			p.P(`inter, ok := p.Source.(`, ccTypeName, `Getter)`)
 			p.P(`if ok {`)
 			p.In()
-			p.P(`return inter.Get`, ccTypeName, `().`, p.GetFieldName(message, field), `, nil`)
+
+			if hasStar {
+				p.P(`return inter.Get`, ccTypeName, `().Get`, p.GetFieldName(message, field), `(), nil`)
+			} else {
+				p.P(`return inter.Get`, ccTypeName, `().`, p.GetFieldName(message, field), `, nil`)
+			}
+
 			p.Out()
 			p.P(`}`)
 			p.P(`return nil, `, fmtPkg.Use(), `.Errorf("field `, field.GetName(), ` not resolved")`)
@@ -268,18 +284,6 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	return gqltype
 }
 
-func oneofFields(message *generator.Descriptor, messageIndex, oneofIndex int) *oneof {
-	fields := make([]*descriptor.FieldDescriptorProto, 0)
-
-	for _, field := range message.DescriptorProto.Field {
-		if field.OneofIndex != nil && *field.OneofIndex == int32(oneofIndex) {
-			fields = append(fields, field)
-		}
-	}
-
-	return &oneof{message, fields, messageIndex, oneofIndex}
-}
-
 func (p *graphql) graphQLTypeVarName(obj generator.Object) string {
 	return fmt.Sprint(p.DefaultPackageName(obj), "GraphQL", generator.CamelCaseSlice(obj.TypeName()), "Type")
 }
@@ -290,6 +294,18 @@ func graphQLUnionName(message *generator.Descriptor, oneof *descriptor.OneofDesc
 
 func graphQLUnionVarName(message *generator.Descriptor, oneof *descriptor.OneofDescriptorProto) string {
 	return fmt.Sprint("GraphQL", graphQLUnionName(message, oneof), "Union")
+}
+
+func oneofFields(message *generator.Descriptor, messageIndex, oneofIndex int) *oneof {
+	fields := make([]*descriptor.FieldDescriptorProto, 0)
+
+	for _, field := range message.DescriptorProto.Field {
+		if field.OneofIndex != nil && *field.OneofIndex == int32(oneofIndex) {
+			fields = append(fields, field)
+		}
+	}
+
+	return &oneof{message, fields, messageIndex, oneofIndex}
 }
 
 func snakeCase(in string) string {
