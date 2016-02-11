@@ -19,7 +19,7 @@ message Menu {
 message LineItem {
   // The menu dish, can either be lunch or dessert
   oneof dish {
-    // A lunch dish
+    // A lunch dish don't choke on this quote " here
     Lunch lunch = 100;
     // A dessert dish
     flavortown.dessert.Dessert tasty_dessert = 101;

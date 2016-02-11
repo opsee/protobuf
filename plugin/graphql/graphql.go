@@ -6,6 +6,7 @@ import (
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 	"github.com/opsee/protobuf/gogogqlproto"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -106,13 +107,13 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.In()
 
 	for mi, message := range p.messages {
-		messageGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d", mi)))
+		messageGQL := p.comment(fmt.Sprintf("4,%d", mi))
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
 
 		p.P(p.graphQLTypeVarName(message), ` = `, graphQLPkg.Use(), `.NewObject(`, graphQLPkg.Use(), `.ObjectConfig{`)
 		p.In()
 		p.P(`Name:        "`, p.TypeNameWithPackage(message), `",`)
-		p.P(`Description: "`, messageGQL, `",`)
+		p.P(`Description: `, messageGQL, `,`)
 		p.P(`Fields: (`, graphQLPkg.Use(), `.FieldsThunk)(func() `, graphQLPkg.Use(), `.Fields {`)
 		p.In()
 		p.P(`return `, graphQLPkg.Use(), `.Fields{`)
@@ -124,7 +125,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			}
 
 			var (
-				fieldGQL = strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,2,%d", mi, fi)))
+				fieldGQL = p.comment(fmt.Sprintf("4,%d,2,%d", mi, fi))
 				gtype, _ = p.GoType(message, field)
 				hasStar  = strings.Index(gtype, "*") == 0
 			)
@@ -132,7 +133,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
 			p.P(`Type:        `, p.graphQLType(message, field, graphQLPkg, schemaPkg), `,`)
-			p.P(`Description: "`, fieldGQL, `",`)
+			p.P(`Description: `, fieldGQL, `,`)
 			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
 			p.In()
 			p.P(`obj, ok := p.Source.(*`, ccTypeName, `)`)
@@ -166,12 +167,12 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.P(`},`)
 		}
 		for fi, field := range message.DescriptorProto.OneofDecl {
-			fieldGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,8,%d", mi, fi)))
+			fieldGQL := p.comment(fmt.Sprintf("4,%d,8,%d", mi, fi))
 
 			p.P(`"`, field.GetName(), `": &`, graphQLPkg.Use(), `.Field{`)
 			p.In()
 			p.P(`Type:        `, graphQLUnionVarName(message, field), `,`)
-			p.P(`Description: "`, fieldGQL, `",`)
+			p.P(`Description: `, fieldGQL, `,`)
 			p.P(`Resolve: func(p `, graphQLPkg.Use(), `.ResolveParams) (interface{}, error) {`)
 			p.In()
 			p.P(`obj, ok := p.Source.(*`, ccTypeName, `)`)
@@ -198,12 +199,12 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	// declare our unions last, since the types will have needed to be defined from all messages first
 	for decl, oo := range p.oneofs {
 		ccTypeName := generator.CamelCaseSlice(oo.message.TypeName())
-		fieldGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d,8,%d", oo.messageIndex, oo.oneofIndex)))
+		fieldGQL := p.comment(fmt.Sprintf("4,%d,8,%d", oo.messageIndex, oo.oneofIndex))
 
 		p.P(graphQLUnionVarName(oo.message, decl), ` = `, graphQLPkg.Use(), `.NewUnion(`, graphQLPkg.Use(), `.UnionConfig{`)
 		p.In()
 		p.P(`Name:        "`, graphQLUnionName(oo.message, decl), `",`)
-		p.P(`Description: "`, fieldGQL, `",`)
+		p.P(`Description: `, fieldGQL, `,`)
 		p.P(`Types:       []*`, graphQLPkg.Use(), `.Object{`)
 		p.In()
 		for _, field := range oo.fields {
@@ -282,6 +283,10 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	}
 
 	return gqltype
+}
+
+func (p *graphql) comment(path string) string {
+	return strconv.Quote(strings.TrimSpace(p.Comments(path)))
 }
 
 func (p *graphql) graphQLTypeVarName(obj generator.Object) string {
