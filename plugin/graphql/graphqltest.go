@@ -5,7 +5,7 @@ import (
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/plugin/testgen"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
-	"github.com/opsee/protobuf/gogogqlproto"
+	"github.com/opsee/protobuf/opseeproto"
 	"strings"
 )
 
@@ -24,7 +24,7 @@ func NewTest(g *generator.Generator) testgen.TestPlugin {
 func (p *test) Generate(imports generator.PluginImports, file *generator.FileDescriptor) bool {
 	used := false
 
-	if gogogqlproto.GetGraphQLFile(file.FileDescriptorProto) != true {
+	if opseeproto.GetGraphQLFile(file.FileDescriptorProto) != true {
 		return used
 	}
 

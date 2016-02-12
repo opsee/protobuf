@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
-	"github.com/opsee/protobuf/gogogqlproto"
+	"github.com/opsee/protobuf/opseeproto"
 	"strconv"
 	"strings"
 	"unicode"
@@ -46,12 +46,12 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	p.messages = make([]*generator.Descriptor, 0)
 	p.oneofs = make(map[*descriptor.OneofDescriptorProto]*oneof)
 
-	if gogogqlproto.GetGraphQLFile(file.FileDescriptorProto) != true {
+	if opseeproto.GetGraphQLFile(file.FileDescriptorProto) != true {
 		return
 	}
 
 	graphQLPkg := p.NewImport("github.com/graphql-go/graphql")
-	schemaPkg := p.NewImport("github.com/opsee/protobuf/gogogqlproto")
+	schemaPkg := p.NewImport("github.com/opsee/protobuf/opseeproto")
 	fmtPkg := p.NewImport("fmt")
 
 	for mi, message := range file.Messages() {
