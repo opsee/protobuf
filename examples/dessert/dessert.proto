@@ -1,11 +1,11 @@
 syntax = "proto3";
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "github.com/opsee/protobuf/gogogqlproto/gogogql.proto";
+import "github.com/opsee/protobuf/opseeproto/opsee.proto";
 
 package flavortown.dessert;
 
-option (gogogqlproto.graphql) = true;
+option (opseeproto.graphql) = true;
 
 
 // A delicious dessert dish on the menu

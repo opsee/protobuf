@@ -17,7 +17,7 @@ import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
-import _ "github.com/opsee/protobuf/gogogqlproto"
+import _ "github.com/opsee/protobuf/opseeproto"
 
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
 

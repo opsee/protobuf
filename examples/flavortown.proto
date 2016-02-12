@@ -2,12 +2,12 @@ syntax = "proto3";
 
 import "github.com/opsee/protobuf/proto/google/protobuf/timestamp.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "github.com/opsee/protobuf/gogogqlproto/gogogql.proto";
+import "github.com/opsee/protobuf/opseeproto/opsee.proto";
 import "github.com/opsee/protobuf/examples/dessert/dessert.proto";
 
 package flavortown;
 
-option (gogogqlproto.graphql) = true;
+option (opseeproto.graphql) = true;
 
 // The menu at Guy’s American Kitchen & Bar reflects his signature style of authentic and surprising flavors
 message Menu {

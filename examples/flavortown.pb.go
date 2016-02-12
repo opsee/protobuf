@@ -20,13 +20,13 @@ import fmt "fmt"
 import math "math"
 import google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
 import _ "github.com/gogo/protobuf/gogoproto"
-import _ "github.com/opsee/protobuf/gogogqlproto"
+import _ "github.com/opsee/protobuf/opseeproto"
 import flavortown_dessert "github.com/opsee/protobuf/examples/dessert"
 
 import bytes "bytes"
 
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
-import github_com_opsee_protobuf_gogogqlproto "github.com/opsee/protobuf/gogogqlproto"
+import github_com_opsee_protobuf_opseeproto "github.com/opsee/protobuf/opseeproto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -435,7 +435,7 @@ func init() {
 					},
 				},
 				"created_at": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
+					Type:        github_com_opsee_protobuf_opseeproto.ByteString,
 					Description: "A timestamp representing when the dish was added to the menu",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
@@ -450,7 +450,7 @@ func init() {
 					},
 				},
 				"updated_at": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
+					Type:        github_com_opsee_protobuf_opseeproto.ByteString,
 					Description: "A timestamp representing when the dish was updated",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
@@ -499,7 +499,7 @@ func init() {
 					},
 				},
 				"description": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_gogogqlproto.ByteString,
+					Type:        github_com_opsee_protobuf_opseeproto.ByteString,
 					Description: "The description of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*Lunch)

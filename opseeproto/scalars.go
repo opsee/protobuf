@@ -1,4 +1,4 @@
-package gogogqlproto
+package opseeproto
 
 import (
 	"fmt"

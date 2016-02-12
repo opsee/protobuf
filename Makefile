@@ -1,4 +1,4 @@
-VANITY_DIR = gogogqlproto
+VANITY_DIR = opseeproto
 EXAMPLE_DIR = examples
 PROTO_DIR = proto
 
