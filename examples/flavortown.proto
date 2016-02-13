@@ -30,6 +30,8 @@ message LineItem {
   google.protobuf.Timestamp created_at = 3;
   // A timestamp representing when the dish was updated
   google.protobuf.Timestamp updated_at = 4;
+  // A list of nothing really
+  Nothing nothing = 5;
 }
 
 // A delicious lunch dish on the menu
@@ -38,4 +40,10 @@ message Lunch {
   string name = 1;
   // The description of the dish
   bytes description = 2;
+}
+
+// confusion
+message Nothing {
+  // the void
+  string void = 1;
 }

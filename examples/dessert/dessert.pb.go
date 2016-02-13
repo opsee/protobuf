@@ -97,7 +97,11 @@ func init() {
 						}
 						inter, ok := p.Source.(DessertGetter)
 						if ok {
-							return inter.GetDessert().Name, nil
+							face := inter.GetDessert()
+							if face == nil {
+								return new(string), nil
+							}
+							return face.Name, nil
 						}
 						return nil, fmt.Errorf("field name not resolved")
 					},
@@ -112,7 +116,11 @@ func init() {
 						}
 						inter, ok := p.Source.(DessertGetter)
 						if ok {
-							return inter.GetDessert().Sweetness, nil
+							face := inter.GetDessert()
+							if face == nil {
+								return new(int32), nil
+							}
+							return face.Sweetness, nil
 						}
 						return nil, fmt.Errorf("field sweetness not resolved")
 					},

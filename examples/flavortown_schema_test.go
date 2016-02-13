@@ -28,6 +28,7 @@ func TestSchema(t *testing.T) {
 				PriceCents: 50,
 				CreatedAt:  &google_protobuf.Timestamp{100, 100},
 				UpdatedAt:  &google_protobuf.Timestamp{200, 200},
+				Nothing:   nil,
 			},
 		},
 	}
@@ -66,6 +67,9 @@ func TestSchema(t *testing.T) {
 				price_cents
 				created_at
 				updated_at
+				nothing {
+					void
+				}
 			}
 		}
 	}`})
