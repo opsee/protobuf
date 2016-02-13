@@ -12,6 +12,7 @@ It has these top-level messages:
 	Menu
 	LineItem
 	Lunch
+	Nothing
 */
 package flavortown
 
@@ -64,6 +65,8 @@ type LineItem struct {
 	CreatedAt *google_protobuf.Timestamp `protobuf:"bytes,3,opt,name=created_at" json:"created_at,omitempty"`
 	// A timestamp representing when the dish was updated
 	UpdatedAt *google_protobuf.Timestamp `protobuf:"bytes,4,opt,name=updated_at" json:"updated_at,omitempty"`
+	// A list of nothing really
+	Nothing *Nothing `protobuf:"bytes,5,opt,name=nothing" json:"nothing,omitempty"`
 }
 
 func (m *LineItem) Reset()         { *m = LineItem{} }
@@ -116,6 +119,13 @@ func (m *LineItem) GetCreatedAt() *google_protobuf.Timestamp {
 func (m *LineItem) GetUpdatedAt() *google_protobuf.Timestamp {
 	if m != nil {
 		return m.UpdatedAt
+	}
+	return nil
+}
+
+func (m *LineItem) GetNothing() *Nothing {
+	if m != nil {
+		return m.Nothing
 	}
 	return nil
 }
@@ -185,10 +195,21 @@ func (m *Lunch) Reset()         { *m = Lunch{} }
 func (m *Lunch) String() string { return proto.CompactTextString(m) }
 func (*Lunch) ProtoMessage()    {}
 
+// confusion
+type Nothing struct {
+	// the void
+	Void string `protobuf:"bytes,1,opt,name=void,proto3" json:"void,omitempty"`
+}
+
+func (m *Nothing) Reset()         { *m = Nothing{} }
+func (m *Nothing) String() string { return proto.CompactTextString(m) }
+func (*Nothing) ProtoMessage()    {}
+
 func init() {
 	proto.RegisterType((*Menu)(nil), "flavortown.Menu")
 	proto.RegisterType((*LineItem)(nil), "flavortown.LineItem")
 	proto.RegisterType((*Lunch)(nil), "flavortown.Lunch")
+	proto.RegisterType((*Nothing)(nil), "flavortown.Nothing")
 }
 func (this *Menu) Equal(that interface{}) bool {
 	if that == nil {
@@ -266,6 +287,9 @@ func (this *LineItem) Equal(that interface{}) bool {
 		return false
 	}
 	if !this.UpdatedAt.Equal(that1.UpdatedAt) {
+		return false
+	}
+	if !this.Nothing.Equal(that1.Nothing) {
 		return false
 	}
 	return true
@@ -363,6 +387,36 @@ func (this *Lunch) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *Nothing) Equal(that interface{}) bool {
+	if that == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	}
+
+	that1, ok := that.(*Nothing)
+	if !ok {
+		that2, ok := that.(Nothing)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		if this == nil {
+			return true
+		}
+		return false
+	} else if this == nil {
+		return false
+	}
+	if this.Void != that1.Void {
+		return false
+	}
+	return true
+}
 
 type MenuGetter interface {
 	GetMenu() *Menu
@@ -382,6 +436,12 @@ type LunchGetter interface {
 }
 
 var GraphQLLunchType *github_com_graphql_go_graphql.Object
+
+type NothingGetter interface {
+	GetNothing() *Nothing
+}
+
+var GraphQLNothingType *github_com_graphql_go_graphql.Object
 
 func (g *LineItem_Lunch) GetLunch() *Lunch {
 	return g.Lunch
@@ -406,7 +466,11 @@ func init() {
 						}
 						inter, ok := p.Source.(MenuGetter)
 						if ok {
-							return inter.GetMenu().Items, nil
+							face := inter.GetMenu()
+							if face == nil {
+								return new([]*LineItem), nil
+							}
+							return face.Items, nil
 						}
 						return nil, fmt.Errorf("field items not resolved")
 					},
@@ -429,7 +493,11 @@ func init() {
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
-							return inter.GetLineItem().PriceCents, nil
+							face := inter.GetLineItem()
+							if face == nil {
+								return new(int32), nil
+							}
+							return face.PriceCents, nil
 						}
 						return nil, fmt.Errorf("field price_cents not resolved")
 					},
@@ -440,11 +508,23 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							return obj.GetCreatedAt(), nil
+							o := obj.GetCreatedAt()
+							if o == nil {
+								return new(google_protobuf.Timestamp), nil
+							}
+							return o, nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
-							return inter.GetLineItem().GetCreatedAt(), nil
+							face := inter.GetLineItem()
+							if face == nil {
+								return new(*google_protobuf.Timestamp), nil
+							}
+							o := face.GetCreatedAt()
+							if o == nil {
+								return new(google_protobuf.Timestamp), nil
+							}
+							return o, nil
 						}
 						return nil, fmt.Errorf("field created_at not resolved")
 					},
@@ -455,13 +535,52 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							return obj.GetUpdatedAt(), nil
+							o := obj.GetUpdatedAt()
+							if o == nil {
+								return new(google_protobuf.Timestamp), nil
+							}
+							return o, nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
-							return inter.GetLineItem().GetUpdatedAt(), nil
+							face := inter.GetLineItem()
+							if face == nil {
+								return new(*google_protobuf.Timestamp), nil
+							}
+							o := face.GetUpdatedAt()
+							if o == nil {
+								return new(google_protobuf.Timestamp), nil
+							}
+							return o, nil
 						}
 						return nil, fmt.Errorf("field updated_at not resolved")
+					},
+				},
+				"nothing": &github_com_graphql_go_graphql.Field{
+					Type:        GraphQLNothingType,
+					Description: "A list of nothing really",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*LineItem)
+						if ok {
+							o := obj.GetNothing()
+							if o == nil {
+								return new(Nothing), nil
+							}
+							return o, nil
+						}
+						inter, ok := p.Source.(LineItemGetter)
+						if ok {
+							face := inter.GetLineItem()
+							if face == nil {
+								return new(*Nothing), nil
+							}
+							o := face.GetNothing()
+							if o == nil {
+								return new(Nothing), nil
+							}
+							return o, nil
+						}
+						return nil, fmt.Errorf("field nothing not resolved")
 					},
 				},
 				"dish": &github_com_graphql_go_graphql.Field{
@@ -493,7 +612,11 @@ func init() {
 						}
 						inter, ok := p.Source.(LunchGetter)
 						if ok {
-							return inter.GetLunch().Name, nil
+							face := inter.GetLunch()
+							if face == nil {
+								return new(string), nil
+							}
+							return face.Name, nil
 						}
 						return nil, fmt.Errorf("field name not resolved")
 					},
@@ -508,9 +631,40 @@ func init() {
 						}
 						inter, ok := p.Source.(LunchGetter)
 						if ok {
-							return inter.GetLunch().Description, nil
+							face := inter.GetLunch()
+							if face == nil {
+								return new([]byte), nil
+							}
+							return face.Description, nil
 						}
 						return nil, fmt.Errorf("field description not resolved")
+					},
+				},
+			}
+		}),
+	})
+	GraphQLNothingType = github_com_graphql_go_graphql.NewObject(github_com_graphql_go_graphql.ObjectConfig{
+		Name:        "flavortownNothing",
+		Description: "confusion",
+		Fields: (github_com_graphql_go_graphql.FieldsThunk)(func() github_com_graphql_go_graphql.Fields {
+			return github_com_graphql_go_graphql.Fields{
+				"void": &github_com_graphql_go_graphql.Field{
+					Type:        github_com_graphql_go_graphql.String,
+					Description: "the void",
+					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
+						obj, ok := p.Source.(*Nothing)
+						if ok {
+							return obj.Void, nil
+						}
+						inter, ok := p.Source.(NothingGetter)
+						if ok {
+							face := inter.GetNothing()
+							if face == nil {
+								return new(string), nil
+							}
+							return face.Void, nil
+						}
+						return nil, fmt.Errorf("field void not resolved")
 					},
 				},
 			}
@@ -567,6 +721,9 @@ func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 	if r.Intn(10) != 0 {
 		this.UpdatedAt = google_protobuf.NewPopulatedTimestamp(r, easy)
 	}
+	if r.Intn(10) != 0 {
+		this.Nothing = NewPopulatedNothing(r, easy)
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -590,6 +747,14 @@ func NewPopulatedLunch(r randyFlavortown, easy bool) *Lunch {
 	for i := 0; i < v2; i++ {
 		this.Description[i] = byte(r.Intn(256))
 	}
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedNothing(r randyFlavortown, easy bool) *Nothing {
+	this := &Nothing{}
+	this.Void = randStringFlavortown(r)
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
