@@ -468,7 +468,7 @@ func init() {
 						if ok {
 							face := inter.GetMenu()
 							if face == nil {
-								return new([]*LineItem), nil
+								return nil, nil
 							}
 							return face.Items, nil
 						}
@@ -495,7 +495,7 @@ func init() {
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(int32), nil
+								return nil, nil
 							}
 							return face.PriceCents, nil
 						}
@@ -508,23 +508,21 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							o := obj.GetCreatedAt()
-							if o == nil {
-								return new(google_protobuf.Timestamp), nil
+							if obj.CreatedAt == nil {
+								return nil, nil
 							}
-							return o, nil
+							return obj.GetCreatedAt(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(*google_protobuf.Timestamp), nil
+								return nil, nil
 							}
-							o := face.GetCreatedAt()
-							if o == nil {
-								return new(google_protobuf.Timestamp), nil
+							if face.CreatedAt == nil {
+								return nil, nil
 							}
-							return o, nil
+							return face.GetCreatedAt(), nil
 						}
 						return nil, fmt.Errorf("field created_at not resolved")
 					},
@@ -535,23 +533,21 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							o := obj.GetUpdatedAt()
-							if o == nil {
-								return new(google_protobuf.Timestamp), nil
+							if obj.UpdatedAt == nil {
+								return nil, nil
 							}
-							return o, nil
+							return obj.GetUpdatedAt(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(*google_protobuf.Timestamp), nil
+								return nil, nil
 							}
-							o := face.GetUpdatedAt()
-							if o == nil {
-								return new(google_protobuf.Timestamp), nil
+							if face.UpdatedAt == nil {
+								return nil, nil
 							}
-							return o, nil
+							return face.GetUpdatedAt(), nil
 						}
 						return nil, fmt.Errorf("field updated_at not resolved")
 					},
@@ -562,23 +558,21 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							o := obj.GetNothing()
-							if o == nil {
-								return new(Nothing), nil
+							if obj.Nothing == nil {
+								return nil, nil
 							}
-							return o, nil
+							return obj.GetNothing(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(*Nothing), nil
+								return nil, nil
 							}
-							o := face.GetNothing()
-							if o == nil {
-								return new(Nothing), nil
+							if face.Nothing == nil {
+								return nil, nil
 							}
-							return o, nil
+							return face.GetNothing(), nil
 						}
 						return nil, fmt.Errorf("field nothing not resolved")
 					},
@@ -614,7 +608,7 @@ func init() {
 						if ok {
 							face := inter.GetLunch()
 							if face == nil {
-								return new(string), nil
+								return nil, nil
 							}
 							return face.Name, nil
 						}
@@ -633,7 +627,7 @@ func init() {
 						if ok {
 							face := inter.GetLunch()
 							if face == nil {
-								return new([]byte), nil
+								return nil, nil
 							}
 							return face.Description, nil
 						}
@@ -660,7 +654,7 @@ func init() {
 						if ok {
 							face := inter.GetNothing()
 							if face == nil {
-								return new(string), nil
+								return nil, nil
 							}
 							return face.Void, nil
 						}
