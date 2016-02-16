@@ -468,7 +468,7 @@ func init() {
 						if ok {
 							face := inter.GetMenu()
 							if face == nil {
-								return new([]*LineItem), nil
+								return nil, nil
 							}
 							return face.Items, nil
 						}
@@ -495,7 +495,7 @@ func init() {
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(int32), nil
+								return nil, nil
 							}
 							return face.PriceCents, nil
 						}
@@ -509,7 +509,7 @@ func init() {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
 							if obj.CreatedAt == nil {
-								return new(google_protobuf.Timestamp), nil
+								return nil, nil
 							}
 							return obj.GetCreatedAt(), nil
 						}
@@ -517,10 +517,10 @@ func init() {
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(google_protobuf.Timestamp), nil
+								return nil, nil
 							}
 							if face.CreatedAt == nil {
-								return new(google_protobuf.Timestamp), nil
+								return nil, nil
 							}
 							return face.GetCreatedAt(), nil
 						}
@@ -534,7 +534,7 @@ func init() {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
 							if obj.UpdatedAt == nil {
-								return new(google_protobuf.Timestamp), nil
+								return nil, nil
 							}
 							return obj.GetUpdatedAt(), nil
 						}
@@ -542,10 +542,10 @@ func init() {
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(google_protobuf.Timestamp), nil
+								return nil, nil
 							}
 							if face.UpdatedAt == nil {
-								return new(google_protobuf.Timestamp), nil
+								return nil, nil
 							}
 							return face.GetUpdatedAt(), nil
 						}
@@ -559,7 +559,7 @@ func init() {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
 							if obj.Nothing == nil {
-								return new(Nothing), nil
+								return nil, nil
 							}
 							return obj.GetNothing(), nil
 						}
@@ -567,10 +567,10 @@ func init() {
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(Nothing), nil
+								return nil, nil
 							}
 							if face.Nothing == nil {
-								return new(Nothing), nil
+								return nil, nil
 							}
 							return face.GetNothing(), nil
 						}
@@ -608,7 +608,7 @@ func init() {
 						if ok {
 							face := inter.GetLunch()
 							if face == nil {
-								return new(string), nil
+								return nil, nil
 							}
 							return face.Name, nil
 						}
@@ -627,7 +627,7 @@ func init() {
 						if ok {
 							face := inter.GetLunch()
 							if face == nil {
-								return new([]byte), nil
+								return nil, nil
 							}
 							return face.Description, nil
 						}
@@ -654,7 +654,7 @@ func init() {
 						if ok {
 							face := inter.GetNothing()
 							if face == nil {
-								return new(string), nil
+								return nil, nil
 							}
 							return face.Void, nil
 						}

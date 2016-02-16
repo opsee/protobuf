@@ -143,7 +143,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			if hasStar {
 				p.P(`if obj.`, p.GetFieldName(message, field), ` == nil {`)
 				p.In()
-				p.P(`return new(`, gtype[1:], `), nil`)
+				p.P(`return nil, nil`)
 				p.Out()
 				p.P(`}`)
 				p.P(`return obj.Get`, p.GetFieldName(message, field), `(), nil`)
@@ -159,19 +159,14 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 			p.P(`face := inter.Get`, ccTypeName, `()`)
 			p.P(`if face == nil {`)
 			p.In()
-			if hasStar {
-				p.P(`return new(`, gtype[1:], `), nil`)
-			} else {
-				p.P(`return new(`, gtype, `), nil`)
-			}
-
+			p.P(`return nil, nil`)
 			p.Out()
 			p.P(`}`)
 
 			if hasStar {
 				p.P(`if face.`, p.GetFieldName(message, field), ` == nil {`)
 				p.In()
-				p.P(`return new(`, gtype[1:], `), nil`)
+				p.P(`return nil, nil`)
 				p.Out()
 				p.P(`}`)
 				p.P(`return face.Get`, p.GetFieldName(message, field), `(), nil`)

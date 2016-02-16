@@ -99,7 +99,7 @@ func init() {
 						if ok {
 							face := inter.GetDessert()
 							if face == nil {
-								return new(string), nil
+								return nil, nil
 							}
 							return face.Name, nil
 						}
@@ -118,7 +118,7 @@ func init() {
 						if ok {
 							face := inter.GetDessert()
 							if face == nil {
-								return new(int32), nil
+								return nil, nil
 							}
 							return face.Sweetness, nil
 						}
