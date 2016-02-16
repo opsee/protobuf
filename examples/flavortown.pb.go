@@ -508,23 +508,21 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							o := obj.GetCreatedAt()
-							if o == nil {
+							if obj.CreatedAt == nil {
 								return new(google_protobuf.Timestamp), nil
 							}
-							return o, nil
+							return obj.GetCreatedAt(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(*google_protobuf.Timestamp), nil
-							}
-							o := face.GetCreatedAt()
-							if o == nil {
 								return new(google_protobuf.Timestamp), nil
 							}
-							return o, nil
+							if face.CreatedAt == nil {
+								return new(google_protobuf.Timestamp), nil
+							}
+							return face.GetCreatedAt(), nil
 						}
 						return nil, fmt.Errorf("field created_at not resolved")
 					},
@@ -535,23 +533,21 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							o := obj.GetUpdatedAt()
-							if o == nil {
+							if obj.UpdatedAt == nil {
 								return new(google_protobuf.Timestamp), nil
 							}
-							return o, nil
+							return obj.GetUpdatedAt(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(*google_protobuf.Timestamp), nil
-							}
-							o := face.GetUpdatedAt()
-							if o == nil {
 								return new(google_protobuf.Timestamp), nil
 							}
-							return o, nil
+							if face.UpdatedAt == nil {
+								return new(google_protobuf.Timestamp), nil
+							}
+							return face.GetUpdatedAt(), nil
 						}
 						return nil, fmt.Errorf("field updated_at not resolved")
 					},
@@ -562,23 +558,21 @@ func init() {
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
 						if ok {
-							o := obj.GetNothing()
-							if o == nil {
+							if obj.Nothing == nil {
 								return new(Nothing), nil
 							}
-							return o, nil
+							return obj.GetNothing(), nil
 						}
 						inter, ok := p.Source.(LineItemGetter)
 						if ok {
 							face := inter.GetLineItem()
 							if face == nil {
-								return new(*Nothing), nil
-							}
-							o := face.GetNothing()
-							if o == nil {
 								return new(Nothing), nil
 							}
-							return o, nil
+							if face.Nothing == nil {
+								return new(Nothing), nil
+							}
+							return face.GetNothing(), nil
 						}
 						return nil, fmt.Errorf("field nothing not resolved")
 					},
