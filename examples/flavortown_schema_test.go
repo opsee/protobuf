@@ -3,7 +3,7 @@ package flavortown
 import (
 	"github.com/graphql-go/graphql"
 	dessert "github.com/opsee/protobuf/examples/dessert"
-	google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -17,8 +17,8 @@ func TestSchema(t *testing.T) {
 					Description: []byte("disgusting"),
 				}},
 				PriceCents: 100,
-				CreatedAt:  &google_protobuf.Timestamp{100, 100},
-				UpdatedAt:  &google_protobuf.Timestamp{200, 200},
+				CreatedAt:  &opsee_types.Timestamp{100, 100},
+				UpdatedAt:  &opsee_types.Timestamp{200, 200},
 			},
 			{
 				Dish: &LineItem_TastyDessert{&dessert.Dessert{
@@ -26,8 +26,8 @@ func TestSchema(t *testing.T) {
 					Sweetness: 9,
 				}},
 				PriceCents: 50,
-				CreatedAt:  &google_protobuf.Timestamp{100, 100},
-				UpdatedAt:  &google_protobuf.Timestamp{200, 200},
+				CreatedAt:  &opsee_types.Timestamp{100, 100},
+				UpdatedAt:  &opsee_types.Timestamp{200, 200},
 				Nothing:    nil,
 			},
 		},

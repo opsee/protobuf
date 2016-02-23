@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "github.com/opsee/protobuf/proto/google/protobuf/timestamp.proto";
+import "github.com/opsee/protobuf/opseeproto/types/timestamp.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/opsee/protobuf/opseeproto/opsee.proto";
 import "github.com/opsee/protobuf/examples/dessert/dessert.proto";
@@ -27,9 +27,9 @@ message LineItem {
   // The price of the dish in cents
   int32 price_cents = 2;
   // A timestamp representing when the dish was added to the menu
-  google.protobuf.Timestamp created_at = 3;
+  opsee.types.Timestamp created_at = 3;
   // A timestamp representing when the dish was updated
-  google.protobuf.Timestamp updated_at = 4;
+  opsee.types.Timestamp updated_at = 4;
   // A list of nothing really
   Nothing nothing = 5;
 }

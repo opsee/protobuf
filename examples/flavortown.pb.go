@@ -19,7 +19,7 @@ package flavortown
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
+import opsee_types "github.com/opsee/protobuf/opseeproto/types"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/opseeproto"
 import flavortown_dessert "github.com/opsee/protobuf/examples/dessert"
@@ -27,7 +27,7 @@ import flavortown_dessert "github.com/opsee/protobuf/examples/dessert"
 import bytes "bytes"
 
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
-import github_com_opsee_protobuf_opseeproto "github.com/opsee/protobuf/opseeproto"
+import github_com_opsee_protobuf_plugin_graphql_scalars "github.com/opsee/protobuf/plugin/graphql/scalars"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -62,9 +62,9 @@ type LineItem struct {
 	// The price of the dish in cents
 	PriceCents int32 `protobuf:"varint,2,opt,name=price_cents,proto3" json:"price_cents,omitempty"`
 	// A timestamp representing when the dish was added to the menu
-	CreatedAt *google_protobuf.Timestamp `protobuf:"bytes,3,opt,name=created_at" json:"created_at,omitempty"`
+	CreatedAt *opsee_types.Timestamp `protobuf:"bytes,3,opt,name=created_at" json:"created_at,omitempty"`
 	// A timestamp representing when the dish was updated
-	UpdatedAt *google_protobuf.Timestamp `protobuf:"bytes,4,opt,name=updated_at" json:"updated_at,omitempty"`
+	UpdatedAt *opsee_types.Timestamp `protobuf:"bytes,4,opt,name=updated_at" json:"updated_at,omitempty"`
 	// A list of nothing really
 	Nothing *Nothing `protobuf:"bytes,5,opt,name=nothing" json:"nothing,omitempty"`
 }
@@ -109,14 +109,14 @@ func (m *LineItem) GetTastyDessert() *flavortown_dessert.Dessert {
 	return nil
 }
 
-func (m *LineItem) GetCreatedAt() *google_protobuf.Timestamp {
+func (m *LineItem) GetCreatedAt() *opsee_types.Timestamp {
 	if m != nil {
 		return m.CreatedAt
 	}
 	return nil
 }
 
-func (m *LineItem) GetUpdatedAt() *google_protobuf.Timestamp {
+func (m *LineItem) GetUpdatedAt() *opsee_types.Timestamp {
 	if m != nil {
 		return m.UpdatedAt
 	}
@@ -503,7 +503,7 @@ func init() {
 					},
 				},
 				"created_at": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_opseeproto.ByteString,
+					Type:        github_com_opsee_protobuf_plugin_graphql_scalars.ByteString,
 					Description: "A timestamp representing when the dish was added to the menu",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
@@ -528,7 +528,7 @@ func init() {
 					},
 				},
 				"updated_at": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_opseeproto.ByteString,
+					Type:        github_com_opsee_protobuf_plugin_graphql_scalars.ByteString,
 					Description: "A timestamp representing when the dish was updated",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*LineItem)
@@ -616,7 +616,7 @@ func init() {
 					},
 				},
 				"description": &github_com_graphql_go_graphql.Field{
-					Type:        github_com_opsee_protobuf_opseeproto.ByteString,
+					Type:        github_com_opsee_protobuf_plugin_graphql_scalars.ByteString,
 					Description: "The description of the dish",
 					Resolve: func(p github_com_graphql_go_graphql.ResolveParams) (interface{}, error) {
 						obj, ok := p.Source.(*Lunch)
@@ -710,10 +710,10 @@ func NewPopulatedLineItem(r randyFlavortown, easy bool) *LineItem {
 		this.PriceCents *= -1
 	}
 	if r.Intn(10) != 0 {
-		this.CreatedAt = google_protobuf.NewPopulatedTimestamp(r, easy)
+		this.CreatedAt = opsee_types.NewPopulatedTimestamp(r, easy)
 	}
 	if r.Intn(10) != 0 {
-		this.UpdatedAt = google_protobuf.NewPopulatedTimestamp(r, easy)
+		this.UpdatedAt = opsee_types.NewPopulatedTimestamp(r, easy)
 	}
 	if r.Intn(10) != 0 {
 		this.Nothing = NewPopulatedNothing(r, easy)

@@ -51,7 +51,7 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	}
 
 	graphQLPkg := p.NewImport("github.com/graphql-go/graphql")
-	schemaPkg := p.NewImport("github.com/opsee/protobuf/opseeproto")
+	schemaPkg := p.NewImport("github.com/opsee/protobuf/plugin/graphql/scalars")
 	fmtPkg := p.NewImport("fmt")
 
 	for mi, message := range file.Messages() {
