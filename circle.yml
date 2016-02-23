@@ -10,7 +10,7 @@ dependencies:
     - docker pull quay.io/opsee/build-go:go15
 test:
   override:
-    - make test
+    - make
 
 deployment:
   ami:
