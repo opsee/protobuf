@@ -3,6 +3,7 @@ package types
 import (
 	"database/sql/driver"
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -34,11 +35,11 @@ func (t *Timestamp) Validate() error {
 func (t *Timestamp) Scan(src interface{}) error {
 	switch value := src.(type) {
 	case int:
-		t.Seconds = int64(value)
+		t.ScanMillis(int64(value))
 	case int32:
-		t.Seconds = int64(value)
+		t.ScanMillis(int64(value))
 	case int64:
-		t.Seconds = value
+		t.ScanMillis(value)
 	case time.Time:
 		nanos := value.UnixNano()
 		seconds := nanos / 1e9
@@ -49,6 +50,11 @@ func (t *Timestamp) Scan(src interface{}) error {
 	return t.Validate()
 }
 
+func (t *Timestamp) ScanMillis(millis int64) {
+	t.Seconds = millis / 1000
+	t.Nanos = int32(millis % 1000)
+}
+
 func (t *Timestamp) Value() (driver.Value, error) {
 	return time.Unix(t.Seconds, int64(t.Nanos)).UTC(), t.Validate()
 }
@@ -56,4 +62,18 @@ func (t *Timestamp) Value() (driver.Value, error) {
 func (t *Timestamp) Millis() int64 {
 	millis := t.Seconds * 1000
 	return millis + int64(t.Nanos/1e6)
+}
+
+func (t *Timestamp) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("%d", t.Millis())), nil
+}
+
+func (t *Timestamp) UnmarshalJSON(b []byte) error {
+	millis, err := strconv.ParseInt(string(b), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	t.ScanMillis(millis)
+	return t.Validate()
 }
