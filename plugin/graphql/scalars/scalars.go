@@ -1,4 +1,4 @@
-package opseeproto
+package scalars
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"math"
 	"strconv"
 
-	google_protobuf "github.com/opsee/protobuf/proto/google/protobuf"
+	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 )
 
 func coerceString(value interface{}) interface{} {
@@ -86,10 +86,8 @@ func coerceInt(value interface{}) interface{} {
 			return nil
 		}
 		return coerceInt(val)
-	case *google_protobuf.Timestamp:
-		millis := value.Seconds * 1000
-		millis = millis + int64(value.Nanos/1000000)
-		return millis
+	case *opsee_types.Timestamp:
+		return value.Millis()
 	}
 
 	// If the value cannot be transformed into an int, return nil instead of '0'

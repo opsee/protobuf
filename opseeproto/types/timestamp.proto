@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+
+package opsee.types;
+
+option go_package = "types";
+option (gogoproto.populate_all) = true;
+option (gogoproto.equal_all) = true;
+
+message Timestamp {
+  int64 seconds = 1;
+	int32 nanos = 2;
+}
