@@ -11,6 +11,8 @@ import (
 	"unicode"
 )
 
+const opseeTypes = "opsee_types"
+
 type graphql struct {
 	*generator.Generator
 	generator.PluginImports
@@ -274,15 +276,12 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 		// TODO: fix this to be more robust about imported objects
 		mobj := p.ObjectNamed(field.GetTypeName())
-		if mobj.PackageName() != message.PackageName() {
-			if field.GetTypeName() == "Timestamp" {
-				gqltype = fmt.Sprint(schemaPkgName.Use(), ".", "Timestamp")
-				break
-			}
-
-			gqltype = fmt.Sprint(schemaPkgName.Use(), ".", "ByteString")
+		// fmt.Fprint(os.Stderr, mobj.PackageName())
+		if strings.HasPrefix(mobj.PackageName(), opseeTypes) {
+			gqltype = fmt.Sprint(schemaPkgName.Use(), ".", generator.CamelCaseSlice(mobj.TypeName()))
 			break
 		}
+
 		gqltype = p.graphQLTypeVarName(mobj)
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
 		gqltype = fmt.Sprint(schemaPkgName.Use(), ".", "ByteString")
