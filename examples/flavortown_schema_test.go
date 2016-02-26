@@ -82,15 +82,15 @@ func TestSchema(t *testing.T) {
 	assert.Equal(t, lunchitem.GetLunch().Name, getProp(queryResponse.Data, "menu", "items", 0, "dish", "name"))
 	assert.Equal(t, string(lunchitem.GetLunch().Description), getProp(queryResponse.Data, "menu", "items", 0, "dish", "description"))
 	assert.EqualValues(t, lunchitem.PriceCents, getProp(queryResponse.Data, "menu", "items", 0, "price_cents"))
-	assert.EqualValues(t, lunchitem.CreatedAt.String(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
-	assert.EqualValues(t, lunchitem.UpdatedAt.String(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))
+	assert.EqualValues(t, lunchitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
+	assert.EqualValues(t, lunchitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))
 
 	dessertitem := populatedMenu.Items[1]
 	assert.Equal(t, dessertitem.GetTastyDessert().Name, getProp(queryResponse.Data, "menu", "items", 1, "dish", "name"))
 	assert.EqualValues(t, dessertitem.GetTastyDessert().Sweetness, getProp(queryResponse.Data, "menu", "items", 1, "dish", "sweetness"))
 	assert.EqualValues(t, dessertitem.PriceCents, getProp(queryResponse.Data, "menu", "items", 1, "price_cents"))
-	assert.EqualValues(t, dessertitem.CreatedAt.String(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
-	assert.EqualValues(t, dessertitem.UpdatedAt.String(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))
+	assert.EqualValues(t, dessertitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
+	assert.EqualValues(t, dessertitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))
 }
 
 func getProp(i interface{}, path ...interface{}) interface{} {

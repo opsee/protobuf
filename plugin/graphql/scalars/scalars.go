@@ -95,7 +95,7 @@ func coerceInt(value interface{}) interface{} {
 	return nil
 }
 
-// Int is the GraphQL Integer type definition.
+// Timestamp is the GraphQL Timestamp type definition.
 var Timestamp *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
 	Name:       "Timestamp",
 	Serialize:  coerceInt,
@@ -106,6 +106,29 @@ var Timestamp *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
 			if intValue, err := strconv.Atoi(valueAST.Value); err == nil {
 				return intValue
 			}
+		}
+		return nil
+	},
+})
+
+func coerceAny(value interface{}) interface{} {
+	a, ok := value.(*opsee_types.Any)
+	if ok {
+		return string(a.Value)
+	}
+
+	return nil
+}
+
+// Any is the GraphQL Any type definition.
+var Any *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
+	Name:       "Any",
+	Serialize:  coerceAny,
+	ParseValue: coerceAny,
+	ParseLiteral: func(valueAST ast.Value) interface{} {
+		switch valueAST := valueAST.(type) {
+		case *ast.StringValue:
+			return valueAST.Value
 		}
 		return nil
 	},
