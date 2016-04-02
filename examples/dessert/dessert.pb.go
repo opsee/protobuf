@@ -3,13 +3,13 @@
 // DO NOT EDIT!
 
 /*
-Package flavortown_dessert is a generated protocol buffer package.
+	Package flavortown_dessert is a generated protocol buffer package.
 
-It is generated from these files:
-	dessert.proto
+	It is generated from these files:
+		dessert.proto
 
-It has these top-level messages:
-	Dessert
+	It has these top-level messages:
+		Dessert
 */
 package flavortown_dessert
 
@@ -20,6 +20,8 @@ import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/opseeproto"
 
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
+
+import io "io"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -134,6 +136,62 @@ func init() {
 		}),
 	})
 }
+func (m *Dessert) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *Dessert) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintDessert(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if m.Sweetness != 0 {
+		data[i] = 0x10
+		i++
+		i = encodeVarintDessert(data, i, uint64(m.Sweetness))
+	}
+	return i, nil
+}
+
+func encodeFixed64Dessert(data []byte, offset int, v uint64) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	data[offset+4] = uint8(v >> 32)
+	data[offset+5] = uint8(v >> 40)
+	data[offset+6] = uint8(v >> 48)
+	data[offset+7] = uint8(v >> 56)
+	return offset + 8
+}
+func encodeFixed32Dessert(data []byte, offset int, v uint32) int {
+	data[offset] = uint8(v)
+	data[offset+1] = uint8(v >> 8)
+	data[offset+2] = uint8(v >> 16)
+	data[offset+3] = uint8(v >> 24)
+	return offset + 4
+}
+func encodeVarintDessert(data []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		data[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	data[offset] = uint8(v)
+	return offset + 1
+}
 func NewPopulatedDessert(r randyDessert, easy bool) *Dessert {
 	this := &Dessert{}
 	this.Name = randStringDessert(r)
@@ -218,9 +276,237 @@ func encodeVarintPopulateDessert(data []byte, v uint64) []byte {
 	data = append(data, uint8(v))
 	return data
 }
+func (m *Dessert) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovDessert(uint64(l))
+	}
+	if m.Sweetness != 0 {
+		n += 1 + sovDessert(uint64(m.Sweetness))
+	}
+	return n
+}
+
+func sovDessert(x uint64) (n int) {
+	for {
+		n++
+		x >>= 7
+		if x == 0 {
+			break
+		}
+	}
+	return n
+}
+func sozDessert(x uint64) (n int) {
+	return sovDessert(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *Dessert) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDessert
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Dessert: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Dessert: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDessert
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDessert
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sweetness", wireType)
+			}
+			m.Sweetness = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDessert
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.Sweetness |= (int32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDessert(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDessert
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipDessert(data []byte) (n int, err error) {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowDessert
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowDessert
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if data[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+			return iNdEx, nil
+		case 1:
+			iNdEx += 8
+			return iNdEx, nil
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowDessert
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			iNdEx += length
+			if length < 0 {
+				return 0, ErrInvalidLengthDessert
+			}
+			return iNdEx, nil
+		case 3:
+			for {
+				var innerWire uint64
+				var start int = iNdEx
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return 0, ErrIntOverflowDessert
+					}
+					if iNdEx >= l {
+						return 0, io.ErrUnexpectedEOF
+					}
+					b := data[iNdEx]
+					iNdEx++
+					innerWire |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				innerWireType := int(innerWire & 0x7)
+				if innerWireType == 4 {
+					break
+				}
+				next, err := skipDessert(data[start:])
+				if err != nil {
+					return 0, err
+				}
+				iNdEx = start + next
+			}
+			return iNdEx, nil
+		case 4:
+			return iNdEx, nil
+		case 5:
+			iNdEx += 4
+			return iNdEx, nil
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+	}
+	panic("unreachable")
+}
+
+var (
+	ErrInvalidLengthDessert = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowDessert   = fmt.Errorf("proto: integer overflow")
+)
 
 var fileDescriptorDessert = []byte{
-	// 169 bytes of a gzipped FileDescriptorProto
+	// 177 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0x49, 0x2d, 0x2e,
 	0x4e, 0x2d, 0x2a, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x4a, 0xcb, 0x49, 0x2c, 0xcb,
 	0x2f, 0x2a, 0xc9, 0x2f, 0xcf, 0xd3, 0x83, 0xca, 0x48, 0xe9, 0xa6, 0x67, 0x96, 0x64, 0x94, 0x26,
@@ -229,7 +515,8 @@ var fileDescriptorDessert = []byte{
 	0x42, 0x3d, 0x98, 0x0b, 0xd1, 0x00, 0x66, 0x42, 0x74, 0x28, 0x59, 0x73, 0xb1, 0xbb, 0x40, 0xec,
 	0x12, 0x12, 0xe2, 0x62, 0xc9, 0x4b, 0xcc, 0x4d, 0x95, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x02,
 	0xb3, 0x85, 0x64, 0xb8, 0x38, 0x8b, 0xcb, 0x53, 0x53, 0x4b, 0xf2, 0x80, 0x6a, 0x24, 0x98, 0x80,
-	0x12, 0xac, 0x41, 0x08, 0x01, 0x27, 0x81, 0x1f, 0x0f, 0xe5, 0x18, 0x57, 0x3c, 0x92, 0x63, 0xdc,
-	0x01, 0xc4, 0x07, 0x16, 0xc9, 0x33, 0x26, 0xb1, 0x81, 0x4d, 0x35, 0x06, 0x04, 0x00, 0x00, 0xff,
-	0xff, 0x52, 0x6a, 0x5f, 0x25, 0xdb, 0x00, 0x00, 0x00,
+	0x12, 0xac, 0x41, 0x08, 0x01, 0x27, 0x99, 0x1f, 0x0f, 0xe5, 0x18, 0x57, 0x3c, 0x92, 0x63, 0xdc,
+	0x01, 0xc4, 0x27, 0x80, 0xf8, 0x02, 0x10, 0x3f, 0x00, 0xe2, 0x03, 0x8b, 0xe4, 0x19, 0x93, 0xd8,
+	0xc0, 0x36, 0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0xdd, 0x92, 0xb5, 0xa7, 0xe7, 0x00, 0x00,
+	0x00,
 }

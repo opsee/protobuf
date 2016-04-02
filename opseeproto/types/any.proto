@@ -8,7 +8,9 @@ package opsee.types;
 option go_package = "types";
 option (gogoproto.populate_all) = true;
 option (gogoproto.equal_all) = true;
-
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
 
 message Any {
   string type_url = 1;
