@@ -1,9 +1,4 @@
-FROM quay.io/opsee/build-go:go15
-
-RUN go get -u github.com/gogo/protobuf/proto && \
-    go get -u github.com/gogo/protobuf/protoc-gen-gogo && \
-    go get -u github.com/gogo/protobuf/gogoproto && \
-    go get -u go.pedge.io/pb || true
+FROM quay.io/opsee/build-go:16
 
 COPY ./ /gopath/src/github.com/opsee/protobuf
 

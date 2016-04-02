@@ -7,7 +7,6 @@ machine:
 dependencies:
   override:
     - docker info
-    - docker pull quay.io/opsee/build-go:go15
 test:
   override:
     - make
@@ -18,4 +17,4 @@ deployment:
     owner: opsee
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD quay.io
-      - docker push quay.io/opsee/build-go:gogoopsee
+      - docker push quay.io/opsee/build-go:proto16
