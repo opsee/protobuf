@@ -9,17 +9,11 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 )
 
-var AnyTypeRegistry *AnyTypes
+var AnyTypeRegistry = &AnyTypes{registry: make(map[string]reflect.Type)}
 
 type AnyTypes struct {
 	registry map[string]reflect.Type
 	sync.Mutex
-}
-
-func init() {
-	AnyTypeRegistry = &AnyTypes{
-		registry: make(map[string]reflect.Type),
-	}
 }
 
 func (this *AnyTypes) Get(name string) (reflect.Type, bool) {
