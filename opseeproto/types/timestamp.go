@@ -71,7 +71,12 @@ func (t *Timestamp) MarshalJSON() ([]byte, error) {
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	millis, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
-		tim, err := time.Parse(time.RFC3339, string(b))
+		timStr, err := strconv.Unquote(string(b))
+		if err != nil {
+			return err
+		}
+
+		tim, err := time.Parse(time.RFC3339, timStr)
 		if err != nil {
 			return err
 		}
