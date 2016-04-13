@@ -82,6 +82,7 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 		}
 
 		t.Scan(tim)
+		return t.Validate()
 	}
 
 	t.ScanMillis(millis)
