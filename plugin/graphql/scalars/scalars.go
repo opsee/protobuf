@@ -2,10 +2,11 @@ package scalars
 
 import (
 	"fmt"
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/language/ast"
 	"math"
 	"strconv"
+
+	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/graphql/language/ast"
 
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 )
@@ -133,3 +134,26 @@ var Any *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
 		return nil
 	},
 })
+
+// Any is the GraphQL Any type definition.
+var Error *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
+	Name:       "Error",
+	Serialize:  coerceError,
+	ParseValue: coerceError,
+	ParseLiteral: func(valueAST ast.Value) interface{} {
+		switch valueAST := valueAST.(type) {
+		case *ast.StringValue:
+			return valueAST.Value
+		}
+		return nil
+	},
+})
+
+func coerceError(value interface{}) interface{} {
+	a, ok := value.(*opsee_types.Error)
+	if ok {
+		return string(a.Error())
+	}
+
+	return nil
+}
