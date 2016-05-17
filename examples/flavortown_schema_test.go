@@ -1,12 +1,21 @@
 package flavortown
 
 import (
+	"testing"
+
 	"github.com/graphql-go/graphql"
 	dessert "github.com/opsee/protobuf/examples/dessert"
 	opsee_types "github.com/opsee/protobuf/opseeproto/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
+
+func init() {
+	opsee_types.PermissionsBitmap.Register(0, "peas")
+	opsee_types.PermissionsBitmap.Register(1, "cornbread")
+	opsee_types.PermissionsBitmap.Register(2, "nothing")
+	opsee_types.PermissionsBitmap.Register(3, "another thing")
+	opsee_types.PermissionsBitmap.Register(4, "???")
+}
 
 func TestSchema(t *testing.T) {
 	populatedMenu := &Menu{
@@ -19,6 +28,7 @@ func TestSchema(t *testing.T) {
 				PriceCents: 100,
 				CreatedAt:  &opsee_types.Timestamp{100, 100},
 				UpdatedAt:  &opsee_types.Timestamp{200, 200},
+				Sides:      &opsee_types.Permission{Perm: uint64(0x5)},
 			},
 			{
 				Dish: &LineItem_TastyDessert{&dessert.Dessert{
@@ -28,6 +38,18 @@ func TestSchema(t *testing.T) {
 				PriceCents: 50,
 				CreatedAt:  &opsee_types.Timestamp{100, 100},
 				UpdatedAt:  &opsee_types.Timestamp{200, 200},
+				Sides:      &opsee_types.Permission{Perm: uint64(0x1)},
+				Nothing:    nil,
+			},
+			{
+				Dish: &LineItem_TastyDessert{&dessert.Dessert{
+					Name:      "coolwhip",
+					Sweetness: 9,
+				}},
+				PriceCents: 50,
+				CreatedAt:  &opsee_types.Timestamp{100, 100},
+				UpdatedAt:  &opsee_types.Timestamp{200, 200},
+				Sides:      &opsee_types.Permission{Perm: uint64(0x2)},
 				Nothing:    nil,
 			},
 		},
@@ -67,6 +89,7 @@ func TestSchema(t *testing.T) {
 				price_cents
 				created_at
 				updated_at
+				sides
 				nothing {
 					void
 				}
@@ -84,13 +107,24 @@ func TestSchema(t *testing.T) {
 	assert.EqualValues(t, lunchitem.PriceCents, getProp(queryResponse.Data, "menu", "items", 0, "price_cents"))
 	assert.EqualValues(t, lunchitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
 	assert.EqualValues(t, lunchitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))
+	assert.EqualValues(t, lunchitem.Sides.Permissions(), getProp(queryResponse.Data, "menu", "items", 0, "sides"))
 
 	dessertitem := populatedMenu.Items[1]
 	assert.Equal(t, dessertitem.GetTastyDessert().Name, getProp(queryResponse.Data, "menu", "items", 1, "dish", "name"))
 	assert.EqualValues(t, dessertitem.GetTastyDessert().Sweetness, getProp(queryResponse.Data, "menu", "items", 1, "dish", "sweetness"))
 	assert.EqualValues(t, dessertitem.PriceCents, getProp(queryResponse.Data, "menu", "items", 1, "price_cents"))
-	assert.EqualValues(t, dessertitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
-	assert.EqualValues(t, dessertitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))
+	assert.EqualValues(t, dessertitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 1, "created_at"))
+	assert.EqualValues(t, dessertitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 1, "updated_at"))
+	assert.EqualValues(t, dessertitem.Sides.Permissions(), getProp(queryResponse.Data, "menu", "items", 1, "sides"))
+
+	dessertitem = populatedMenu.Items[2]
+	assert.Equal(t, dessertitem.GetTastyDessert().Name, getProp(queryResponse.Data, "menu", "items", 2, "dish", "name"))
+	assert.EqualValues(t, dessertitem.GetTastyDessert().Sweetness, getProp(queryResponse.Data, "menu", "items", 2, "dish", "sweetness"))
+	assert.EqualValues(t, dessertitem.PriceCents, getProp(queryResponse.Data, "menu", "items", 2, "price_cents"))
+	assert.EqualValues(t, dessertitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 2, "created_at"))
+	assert.EqualValues(t, dessertitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 2, "updated_at"))
+	assert.EqualValues(t, dessertitem.Sides.Permissions(), getProp(queryResponse.Data, "menu", "items", 2, "sides"))
+
 }
 
 func getProp(i interface{}, path ...interface{}) interface{} {

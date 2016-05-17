@@ -135,7 +135,6 @@ var Any *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
 	},
 })
 
-// Any is the GraphQL Any type definition.
 var Error *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
 	Name:       "Error",
 	Serialize:  coerceError,
@@ -153,6 +152,28 @@ func coerceError(value interface{}) interface{} {
 	a, ok := value.(*opsee_types.Error)
 	if ok {
 		return string(a.Error())
+	}
+
+	return nil
+}
+
+var Permission *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
+	Name:       "Permission",
+	Serialize:  coercePermission,
+	ParseValue: coercePermission,
+	ParseLiteral: func(valueAST ast.Value) interface{} {
+		switch valueAST := valueAST.(type) {
+		case *ast.StringValue:
+			return valueAST.Value
+		}
+		return nil
+	},
+})
+
+func coercePermission(value interface{}) interface{} {
+	a, ok := value.(*opsee_types.Permission)
+	if ok {
+		return a.Permissions()
 	}
 
 	return nil
