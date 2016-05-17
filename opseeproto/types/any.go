@@ -13,20 +13,20 @@ var AnyTypeRegistry = &AnyTypes{registry: make(map[string]reflect.Type)}
 
 type AnyTypes struct {
 	registry map[string]reflect.Type
-	sync.Mutex
+	sync.RWMutex
 }
 
 func (this *AnyTypes) Get(name string) (reflect.Type, bool) {
-	AnyTypeRegistry.Lock()
-	defer AnyTypeRegistry.Unlock()
+	this.RLock()
+	defer this.RUnlock()
 	t, ok := this.registry[name]
 	return t, ok
 }
 
 func (this *AnyTypes) RegisterAny(name string, t reflect.Type) {
-	AnyTypeRegistry.Lock()
-	defer AnyTypeRegistry.Unlock()
+	this.Lock()
 	this.registry[name] = t
+	this.Unlock()
 }
 
 // UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.
