@@ -1,7 +1,9 @@
 package types
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"sync"
 )
 
@@ -84,4 +86,27 @@ func (p *Permission) Permissions() []string {
 // Override MarshalJson to return a list of permissions
 func (p *Permission) MarshalJSON() ([]byte, error) {
 	return json.Marshal(p.Permissions())
+}
+
+func (p *Permission) Scan(src interface{}) error {
+	switch value := src.(type) {
+	case int:
+		p.Perm = uint64(value)
+	case int32:
+		p.Perm = uint64(value)
+	case int64:
+		p.Perm = uint64(value)
+	default:
+		return fmt.Errorf("invalid type")
+	}
+
+	return p.Validate()
+}
+
+func (p *Permission) Validate() error {
+	return nil
+}
+
+func (p *Permission) Value() (driver.Value, error) {
+	return int64(p.Perm), nil
 }
