@@ -1,6 +1,7 @@
 package flavortown
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/graphql-go/graphql"
@@ -10,11 +11,17 @@ import (
 )
 
 func init() {
-	opsee_types.PermissionsBitmap.Register(0, "peas")
-	opsee_types.PermissionsBitmap.Register(1, "cornbread")
-	opsee_types.PermissionsBitmap.Register(2, "nothing")
-	opsee_types.PermissionsBitmap.Register(3, "another thing")
-	opsee_types.PermissionsBitmap.Register(4, "???")
+	perms := &opsee_types.PermissionsBitmap{
+		map[int]string{
+			0: "peas",
+			1: "cornbread",
+			2: "nothing",
+			3: "another thing",
+			4: "???",
+		},
+		sync.RWMutex{},
+	}
+	opsee_types.PermissionsRegistry.Register("flavortown", perms)
 }
 
 func TestSchema(t *testing.T) {
