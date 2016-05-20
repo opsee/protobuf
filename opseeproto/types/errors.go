@@ -2,6 +2,7 @@ package types
 
 import "fmt"
 
+// Equivalent to aws-sdk-go Error interface
 type OpseeError interface {
 	error
 
@@ -15,6 +16,7 @@ type OpseeError interface {
 	OrigErr() error
 }
 
+// Error error
 func (o Error) Code() string {
 	return o.ErrorCode
 }

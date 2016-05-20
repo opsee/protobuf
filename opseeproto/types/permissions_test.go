@@ -11,6 +11,10 @@ type PermissionTestable interface {
 	Run() error
 }
 
+func init() {
+
+}
+
 type permissionTest struct {
 	input *Permission
 	i     int
@@ -117,6 +121,15 @@ var permissionTests = []PermissionTestable{
 
 // Run all tests in above list
 func TestRunPermissionTests(t *testing.T) {
+	// register permissions types
+	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
+		Bitmap: map[int]string{
+			0: "admin",
+			1: "edit",
+			2: "billing",
+		},
+	})
+
 	for i, z := range permissionTests {
 		if err := z.Run(); err != nil {
 			t.Error(fmt.Sprintf("Test %d", i), err)
@@ -126,9 +139,8 @@ func TestRunPermissionTests(t *testing.T) {
 
 func TestPermissionsHighBits(t *testing.T) {
 	// register permissions types
-
-	PermissionsRegistry.Register("user", &PermissionsBitmap{
-		registry: map[int]string{
+	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
+		Bitmap: map[int]string{
 			0: "admin",
 			1: "edit",
 			2: "billing",
@@ -136,7 +148,7 @@ func TestPermissionsHighBits(t *testing.T) {
 	})
 
 	// test marshalling of json 011
-	p := &Permission{Perm: uint64(0x3)}
+	p := &Permission{Perm: uint64(0x3), Name: "testuser"}
 
 	expected := []int{0, 1}
 	res := p.HighBits()
@@ -146,13 +158,92 @@ func TestPermissionsHighBits(t *testing.T) {
 }
 
 func TestPermissionsMarshalJSON(t *testing.T) {
+	// register permissions types
+	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
+		Bitmap: map[int]string{
+			0: "admin",
+			1: "edit",
+			2: "billing",
+		},
+	})
+
 	// test marshalling of json 011
 	expected := []string{"admin", "edit"}
-	jb, _ := json.Marshal(&Permission{Perm: uint64(0x3)})
+	jb, _ := json.Marshal(&Permission{Perm: uint64(0x3), Name: "testuser"})
 
 	var res []string
 	_ = json.Unmarshal(jb, &res)
 	if !reflect.DeepEqual(expected, res) {
 		t.Error(fmt.Sprintf("TestPermissionsMarshalJSON expected %v, got %v", expected, res))
+	}
+}
+
+type CheckPermissionsTest struct {
+	perms    *Permission
+	pnames   []string
+	expected map[string]*Error
+}
+
+var permissionsTests = []*CheckPermissionsTest{
+	&CheckPermissionsTest{
+		perms:  &Permission{Perm: uint64(0x7), Name: "testuser"},
+		pnames: []string{"admin", "edit", "billing"},
+		expected: map[string]*Error{
+			"admin":   nil,
+			"edit":    nil,
+			"billing": nil,
+		},
+	},
+	&CheckPermissionsTest{
+		perms:  &Permission{Perm: uint64(0x0), Name: "testuser"},
+		pnames: []string{"admin", "edit", "billing"},
+		expected: map[string]*Error{
+			"admin":   NewPermissionsError("admin"),
+			"edit":    NewPermissionsError("edit"),
+			"billing": NewPermissionsError("billing"),
+		},
+	},
+	&CheckPermissionsTest{
+		perms:  &Permission{Perm: uint64(0x2), Name: "testuser"},
+		pnames: []string{"admin", "edit", "billing"},
+		expected: map[string]*Error{
+			"admin":   NewPermissionsError("admin"),
+			"edit":    nil,
+			"billing": NewPermissionsError("billing"),
+		},
+	},
+}
+
+func TestCheckPermissionsTests(t *testing.T) {
+	// register permissions types
+	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
+		Bitmap: map[int]string{
+			0: "admin",
+			1: "edit",
+			2: "billing",
+		},
+	})
+
+	for i, test := range permissionsTests {
+		output := test.perms.CheckPermissions(test.pnames...)
+		if len(output) != len(test.expected) {
+			t.Error(fmt.Sprintf("Test %d, expected len %d, got len %d", i, len(test.expected), len(output)))
+			continue
+		}
+		for k, errexpected := range test.expected {
+			if errgot, ok := output[k]; ok {
+				if errgot == nil && errexpected != nil {
+					t.Error(fmt.Sprintf("Test %d, expected \"%v\", got nil", i, errexpected.Error()))
+				} else if errgot != nil && errexpected == nil {
+					t.Error(fmt.Sprintf("Test %d, expected nil, got \"%s\"", i, errgot.Error()))
+				} else if errgot != nil && errexpected != nil {
+					if errexpected.Error() != errgot.Error() {
+						t.Error(fmt.Sprintf("Test %d, expected \"%s\", got %s\n\n", i, errexpected.Error(), errgot.Error()))
+					}
+				}
+			} else {
+				t.Error(fmt.Sprintf("Test %d, expected %s, got \"key did not exist\"", i, errexpected))
+			}
+		}
 	}
 }

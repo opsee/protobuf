@@ -7,6 +7,9 @@ import (
 	"sync"
 )
 
+// the permission which corresponds to opsee administrator
+const OpseeAdmin = "opsee_admin"
+
 var PermissionsRegistry = NewPermsRegistry()
 
 func NewPermissionsBitmap() *PermissionsBitmap {
@@ -77,8 +80,8 @@ func (p *Permission) HighBits() []int {
 	return hb
 }
 
+// Returns a list of permissions we have
 func (p *Permission) Permissions() []string {
-	// TODO(dan) return registry errors
 	var perms []string
 	r, ok := PermissionsRegistry.Get(p.Name)
 	if !ok {
@@ -90,6 +93,37 @@ func (p *Permission) Permissions() []string {
 		}
 	}
 	return perms
+}
+
+// Checks permissions map for permission names, returns errors for those that do not exist
+func (p *Permission) HasPermissions(pnames ...string) map[string]bool {
+	hasPerms := make(map[string]bool)
+	retPerms := make(map[string]bool)
+	for _, p := range p.Permissions() {
+		hasPerms[p] = true
+	}
+
+	for _, name := range pnames {
+		if _, ok := hasPerms[name]; ok {
+			retPerms[name] = true
+		} else {
+			retPerms[name] = false
+		}
+	}
+	return retPerms
+}
+
+// Checks permissions map for permission names, returns errors for those that do not exist
+func (p *Permission) CheckPermissions(pnames ...string) map[string]error {
+	permErrs := make(map[string]error)
+	for name, has := range p.HasPermissions(pnames...) {
+		if !has {
+			permErrs[name] = NewPermissionsError(name)
+		} else {
+			permErrs[name] = nil
+		}
+	}
+	return permErrs
 }
 
 // Override MarshalJson to return a list of permissions
@@ -118,4 +152,8 @@ func (p *Permission) Validate() error {
 
 func (p *Permission) Value() (driver.Value, error) {
 	return int64(p.Perm), nil
+}
+
+func NewPermissionsError(pname string) *Error {
+	return NewError("PermissionsError", fmt.Sprintf("Not authorized: %s", pname))
 }
