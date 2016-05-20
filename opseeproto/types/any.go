@@ -4,30 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	"sync"
 
 	proto "github.com/gogo/protobuf/proto"
 )
 
-var AnyTypeRegistry = &AnyTypes{registry: make(map[string]reflect.Type)}
-
-type AnyTypes struct {
-	registry map[string]reflect.Type
-	sync.RWMutex
-}
-
-func (this *AnyTypes) Get(name string) (reflect.Type, bool) {
-	this.RLock()
-	defer this.RUnlock()
-	t, ok := this.registry[name]
-	return t, ok
-}
-
-func (this *AnyTypes) RegisterAny(name string, t reflect.Type) {
-	this.Lock()
-	this.registry[name] = t
-	this.Unlock()
-}
+var AnyTypeRegistry = NewTypesRegistry()
 
 // UnmarshalAny unmarshals an Any object based on its TypeUrl type hint.
 func UnmarshalAny(any *Any) (interface{}, error) {

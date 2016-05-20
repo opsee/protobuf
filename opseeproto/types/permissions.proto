@@ -13,4 +13,5 @@ option (gogoproto.sizer_all) = true;
 
 message Permission {
     fixed64 perm = 1;
+    string name = 2;
 }

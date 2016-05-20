@@ -126,9 +126,14 @@ func TestRunPermissionTests(t *testing.T) {
 
 func TestPermissionsHighBits(t *testing.T) {
 	// register permissions types
-	PermissionsBitmap.Register(0, "admin")
-	PermissionsBitmap.Register(1, "edit")
-	PermissionsBitmap.Register(2, "billing")
+
+	PermissionsRegistry.Register("user", &PermissionsBitmap{
+		registry: map[int]string{
+			0: "admin",
+			1: "edit",
+			2: "billing",
+		},
+	})
 
 	// test marshalling of json 011
 	p := &Permission{Perm: uint64(0x3)}
@@ -141,11 +146,6 @@ func TestPermissionsHighBits(t *testing.T) {
 }
 
 func TestPermissionsMarshalJSON(t *testing.T) {
-	// register permissions types
-	PermissionsBitmap.Register(0, "admin")
-	PermissionsBitmap.Register(1, "edit")
-	PermissionsBitmap.Register(2, "billing")
-
 	// test marshalling of json 011
 	expected := []string{"admin", "edit"}
 	jb, _ := json.Marshal(&Permission{Perm: uint64(0x3)})
