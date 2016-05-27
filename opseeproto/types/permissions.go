@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // the permission which corresponds to opsee administrator
@@ -12,32 +14,54 @@ const OpseeAdmin = "opsee_admin"
 
 var PermissionsRegistry = NewPermsRegistry()
 
-func NewPermissionsBitmap() *PermissionsBitmap {
-	return &PermissionsBitmap{Bitmap: make(map[int]string)}
-}
-
 type PermissionsBitmap struct {
-	Bitmap map[int]string
+	Name     string
+	bitmap   map[int]string
+	inverted map[string]int
 	sync.RWMutex
 }
 
+// Returns new permissions bitmap with mapping of bit to perms in order
+func NewPermissionsBitmap(perms ...string) *PermissionsBitmap {
+	m := &PermissionsBitmap{
+		bitmap:   make(map[int]string),
+		inverted: make(map[string]int),
+	}
+	for i, perm := range perms {
+		m.Register(i, perm)
+	}
+	return m
+}
+
+// Returns bit number of a permission
+func (p *PermissionsBitmap) Bit(perm string) (int, bool) {
+	p.RLock()
+	defer p.RUnlock()
+	i, ok := p.inverted[perm]
+	return i, ok
+}
+
+// Returns flag given bitnumber
 func (p *PermissionsBitmap) Get(i int) (string, bool) {
 	p.RLock()
 	defer p.RUnlock()
-	t, ok := p.Bitmap[i]
+	t, ok := p.bitmap[i]
 	return t, ok
 }
 
+//  Returns number of permissions in the Bitmap
 func (p *PermissionsBitmap) Length() int {
 	p.RLock()
 	defer p.RUnlock()
-	return len(p.Bitmap)
+	return len(p.bitmap)
 }
 
+// Registers permission in the Bitmap and the Inverted map
 func (p *PermissionsBitmap) Register(i int, name string) {
 	p.Lock()
 	defer p.Unlock()
-	p.Bitmap[i] = name
+	p.bitmap[i] = name
+	p.inverted[name] = i
 }
 
 type BitFlags interface {
@@ -52,6 +76,21 @@ type BitFlags interface {
 
 	// return dank bits
 	HighBits() []int
+
+	// returns flag descriptor associated with bit
+	Bit(string) int
+}
+
+// Returns new permissions with mapping of bit to perms in order
+func NewPermissions(name string, perms ...string) (*Permission, error) {
+	p := &Permission{
+		Name: name,
+	}
+	failed := p.SetPermissions(perms...)
+	if len(failed) > 0 {
+		return nil, NewInvalidPermissionsError(failed...)
+	}
+	return p, nil
 }
 
 // Set flag i in permission
@@ -93,6 +132,54 @@ func (p *Permission) Permissions() []string {
 		}
 	}
 	return perms
+}
+
+// Set permission by name
+func (p *Permission) SetPermission(perm string) bool {
+	reg, rok := PermissionsRegistry.Get(p.Name)
+	if !rok {
+		log.Error("Can't get perms registry")
+		return false
+	}
+	if i, ok := reg.Bit(perm); ok {
+		p.Set(i)
+		return true
+	}
+	return false
+}
+
+// Set permissions by name
+func (p *Permission) SetPermissions(perms ...string) (failed []string) {
+	for _, perm := range perms {
+		if p.SetPermission(perm) == false {
+			failed = append(failed, perm)
+		}
+	}
+	return failed
+}
+
+// Clear permission by name
+func (p *Permission) ClearPermission(perm string) bool {
+	reg, rok := PermissionsRegistry.Get(p.Name)
+	if !rok {
+		log.Error("Can't get perms registry")
+		return false
+	}
+	if i, ok := reg.Bit(perm); ok {
+		p.Clear(i)
+		return true
+	}
+	return false
+}
+
+// Clear permissions by name
+func (p *Permission) ClearPermissions(perms ...string) (failed []string) {
+	for _, perm := range perms {
+		if p.ClearPermission(perm) == false {
+			failed = append(failed, perm)
+		}
+	}
+	return failed
 }
 
 // Checks permissions map for permission names, returns errors for those that do not exist
@@ -154,6 +241,10 @@ func (p *Permission) Value() (driver.Value, error) {
 	return int64(p.Perm), nil
 }
 
-func NewPermissionsError(pname string) *Error {
-	return NewError("PermissionsError", fmt.Sprintf("Not authorized: %s", pname))
+func NewPermissionsError(pnames ...string) *Error {
+	return NewError("PermissionsError", fmt.Sprintf("Not authorized: %v", pnames))
+}
+
+func NewInvalidPermissionsError(pnames ...string) *Error {
+	return NewError("PermissionsError", fmt.Sprintf("Invalid: %v", pnames))
 }

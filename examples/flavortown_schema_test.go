@@ -1,7 +1,6 @@
 package flavortown
 
 import (
-	"sync"
 	"testing"
 
 	"github.com/graphql-go/graphql"
@@ -11,16 +10,7 @@ import (
 )
 
 func init() {
-	perms := &opsee_types.PermissionsBitmap{
-		map[int]string{
-			0: "peas",
-			1: "cornbread",
-			2: "nothing",
-			3: "another thing",
-			4: "???",
-		},
-		sync.RWMutex{},
-	}
+	perms := opsee_types.NewPermissionsBitmap("peas", "cornbread", "nothing", "another thing", "???")
 	opsee_types.PermissionsRegistry.Register("flavortown", perms)
 }
 

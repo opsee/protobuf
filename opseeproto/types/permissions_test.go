@@ -11,10 +11,6 @@ type PermissionTestable interface {
 	Run() error
 }
 
-func init() {
-
-}
-
 type permissionTest struct {
 	input *Permission
 	i     int
@@ -122,13 +118,7 @@ var permissionTests = []PermissionTestable{
 // Run all tests in above list
 func TestRunPermissionTests(t *testing.T) {
 	// register permissions types
-	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
-		Bitmap: map[int]string{
-			0: "admin",
-			1: "edit",
-			2: "billing",
-		},
-	})
+	PermissionsRegistry.Register("testuser", NewPermissionsBitmap("admin", "edit", "billing"))
 
 	for i, z := range permissionTests {
 		if err := z.Run(); err != nil {
@@ -139,15 +129,8 @@ func TestRunPermissionTests(t *testing.T) {
 
 func TestPermissionsHighBits(t *testing.T) {
 	// register permissions types
-	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
-		Bitmap: map[int]string{
-			0: "admin",
-			1: "edit",
-			2: "billing",
-		},
-	})
+	PermissionsRegistry.Register("testuser", NewPermissionsBitmap("admin", "edit", "billing"))
 
-	// test marshalling of json 011
 	p := &Permission{Perm: uint64(0x3), Name: "testuser"}
 
 	expected := []int{0, 1}
@@ -157,15 +140,69 @@ func TestPermissionsHighBits(t *testing.T) {
 	}
 }
 
+type SetPermissionsTest struct {
+	perms    *Permission // 0x0
+	pnames   []string    // to set
+	expected []string    // .Permissions()
+	failed   []string    // invalid permissions
+	op       string      // set or clear
+}
+
+var setPermissionsTests = []*SetPermissionsTest{
+	&SetPermissionsTest{
+		perms:    &Permission{Perm: uint64(0x0), Name: "testuser"},
+		pnames:   []string{"admin", "edit", "billing"},
+		expected: []string{"admin", "edit", "billing"},
+		op:       "set",
+	},
+	&SetPermissionsTest{
+		perms:    &Permission{Perm: uint64(0x7), Name: "testuser"},
+		pnames:   []string{"admin"},
+		expected: []string{"edit", "billing"},
+		op:       "clear",
+	},
+	&SetPermissionsTest{
+		perms:    &Permission{Perm: uint64(0x3), Name: "testuser"},
+		pnames:   []string{"billing"},
+		expected: []string{"admin", "edit", "billing"},
+		op:       "set",
+	},
+	&SetPermissionsTest{
+		perms:    &Permission{Perm: uint64(0x3), Name: "testuser"},
+		pnames:   []string{"invalid"},
+		expected: []string{"admin", "edit"},
+		failed:   []string{"invalid"},
+		op:       "set",
+	},
+}
+
+// Tests set and clear of permissions
+func TestSetPermissions(t *testing.T) {
+	// register permissions types
+	PermissionsRegistry.Register("testuser", NewPermissionsBitmap("admin", "edit", "billing"))
+
+	for i, test := range setPermissionsTests {
+		var failed []string
+		switch test.op {
+		case "set":
+			failed = test.perms.SetPermissions(test.pnames...)
+		case "clear":
+			failed = test.perms.ClearPermissions(test.pnames...)
+		}
+		res := test.perms.Permissions()
+		if !reflect.DeepEqual(test.expected, res) {
+			t.Error(fmt.Sprintf("TestSetPermission #%d expected valid perms %v, got %v", i, test.expected, res))
+		}
+		if !reflect.DeepEqual(test.failed, failed) {
+			t.Error(fmt.Sprintf("TestSetPermission #%d expected invalid perms %v, got %v", i, test.failed, failed))
+		}
+
+	}
+}
+
 func TestPermissionsMarshalJSON(t *testing.T) {
 	// register permissions types
-	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
-		Bitmap: map[int]string{
-			0: "admin",
-			1: "edit",
-			2: "billing",
-		},
-	})
+	PermissionsRegistry.Register("testuser", NewPermissionsBitmap("admin", "edit", "billing"))
 
 	// test marshalling of json 011
 	expected := []string{"admin", "edit"}
@@ -216,13 +253,7 @@ var permissionsTests = []*CheckPermissionsTest{
 
 func TestCheckPermissionsTests(t *testing.T) {
 	// register permissions types
-	PermissionsRegistry.Register("testuser", &PermissionsBitmap{
-		Bitmap: map[int]string{
-			0: "admin",
-			1: "edit",
-			2: "billing",
-		},
-	})
+	PermissionsRegistry.Register("testuser", NewPermissionsBitmap("admin", "edit", "billing"))
 
 	for i, test := range permissionsTests {
 		output := test.perms.CheckPermissions(test.pnames...)
