@@ -15,6 +15,14 @@ func init() {
 }
 
 func TestSchema(t *testing.T) {
+	// some sides
+	sa, err := opsee_types.NewPermissions("flavortown", "peas", "nothing")
+	assert.Nil(t, err)
+	sb, err := opsee_types.NewPermissions("flavortown", "peas")
+	assert.Nil(t, err)
+	sc, err := opsee_types.NewPermissions("flavortown", "cornbread")
+	assert.Nil(t, err)
+
 	populatedMenu := &Menu{
 		Items: []*LineItem{
 			{
@@ -25,7 +33,7 @@ func TestSchema(t *testing.T) {
 				PriceCents: 100,
 				CreatedAt:  &opsee_types.Timestamp{100, 100},
 				UpdatedAt:  &opsee_types.Timestamp{200, 200},
-				Sides:      &opsee_types.Permission{Perm: uint64(0x5)},
+				Sides:      sa,
 			},
 			{
 				Dish: &LineItem_TastyDessert{&dessert.Dessert{
@@ -35,7 +43,7 @@ func TestSchema(t *testing.T) {
 				PriceCents: 50,
 				CreatedAt:  &opsee_types.Timestamp{100, 100},
 				UpdatedAt:  &opsee_types.Timestamp{200, 200},
-				Sides:      &opsee_types.Permission{Perm: uint64(0x1)},
+				Sides:      sb,
 				Nothing:    nil,
 			},
 			{
@@ -46,7 +54,7 @@ func TestSchema(t *testing.T) {
 				PriceCents: 50,
 				CreatedAt:  &opsee_types.Timestamp{100, 100},
 				UpdatedAt:  &opsee_types.Timestamp{200, 200},
-				Sides:      &opsee_types.Permission{Perm: uint64(0x2)},
+				Sides:      sc,
 				Nothing:    nil,
 			},
 		},
@@ -105,6 +113,7 @@ func TestSchema(t *testing.T) {
 	assert.EqualValues(t, lunchitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
 	assert.EqualValues(t, lunchitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))
 	assert.EqualValues(t, lunchitem.Sides.Permissions(), getProp(queryResponse.Data, "menu", "items", 0, "sides"))
+	t.Logf("%v", getProp(queryResponse.Data, "menu", "items", 0, "sides"))
 
 	dessertitem := populatedMenu.Items[1]
 	assert.Equal(t, dessertitem.GetTastyDessert().Name, getProp(queryResponse.Data, "menu", "items", 1, "dish", "name"))
