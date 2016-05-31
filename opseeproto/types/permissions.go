@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 // the permission which corresponds to opsee administrator
@@ -138,7 +136,6 @@ func (p *Permission) Permissions() []string {
 func (p *Permission) SetPermission(perm string) bool {
 	reg, rok := PermissionsRegistry.Get(p.Name)
 	if !rok {
-		log.Error("Can't get perms registry")
 		return false
 	}
 	if i, ok := reg.Bit(perm); ok {
@@ -162,7 +159,6 @@ func (p *Permission) SetPermissions(perms ...string) (failed []string) {
 func (p *Permission) ClearPermission(perm string) bool {
 	reg, rok := PermissionsRegistry.Get(p.Name)
 	if !rok {
-		log.Error("Can't get perms registry")
 		return false
 	}
 	if i, ok := reg.Bit(perm); ok {
