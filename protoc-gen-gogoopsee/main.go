@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gogo/protobuf/vanity"
 	"github.com/gogo/protobuf/vanity/command"
+	_ "github.com/opsee/protobuf/plugin/bitflags"
 	_ "github.com/opsee/protobuf/plugin/graphql"
 )
 

@@ -10,6 +10,10 @@ extend google.protobuf.FileOptions {
 	optional bool graphql = 64040;
 }
 
+extend google.protobuf.MessageOptions {
+    optional bool bitflags = 64041;
+}
+
 extend google.protobuf.FieldOptions {
 	optional bool required = 60000;
 }

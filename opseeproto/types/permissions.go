@@ -62,23 +62,6 @@ func (p *PermissionsBitmap) Register(i int, name string) {
 	p.inverted[name] = i
 }
 
-type BitFlags interface {
-	// Set bit to 1 at index i
-	Set(int)
-
-	// Set bit to 0 at index i
-	Clear(int)
-
-	// should return false if outside of bit range
-	Test(int) bool
-
-	// return dank bits
-	HighBits() []int
-
-	// returns flag descriptor associated with bit
-	Bit(string) int
-}
-
 // Returns new permissions with mapping of bit to perms in order
 func NewPermissions(name string, perms ...string) (*Permission, error) {
 	p := &Permission{

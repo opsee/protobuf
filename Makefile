@@ -11,7 +11,7 @@ docker: clean VANITY_DIR
 	docker build -t quay.io/opsee/build-go:proto16 .
 
 EXAMPLE_DIR: docker
-	docker run --rm -it -v $$(pwd):/gopath/src/github.com/opsee/protobuf quay.io/opsee/build-go:proto16 /bin/bash -c 'cd /gopath/src/github.com/opsee/protobuf/$(EXAMPLE_DIR) && make generate && go get -t ./... && go test -v ./...'
+	docker run --rm -it -v $$(pwd):/gopath/src/github.com/opsee/protobuf quay.io/opsee/build-go:proto16 /bin/bash -c 'cd /gopath/src/github.com/opsee/protobuf/$(EXAMPLE_DIR) && make generate && go test -v ./...'
 
 push:
 	docker push quay.io/opsee/build-go:proto16

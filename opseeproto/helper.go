@@ -15,6 +15,10 @@ func GetGraphQLFile(file *descriptor.FileDescriptorProto) bool {
 	return false
 }
 
+func IsBitflags(file *descriptor.FileDescriptorProto, message *descriptor.DescriptorProto) bool {
+	return proto.GetBoolExtension(message.Options, E_Bitflags, false)
+}
+
 func GetRequiredField(message *descriptor.DescriptorProto) bool {
 	if message.Options != nil {
 		v, err := proto.GetExtension(message.Options, E_Required)
