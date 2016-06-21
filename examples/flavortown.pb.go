@@ -906,13 +906,11 @@ func (m *Lunch) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintFlavortown(data, i, uint64(len(m.Name)))
 		i += copy(data[i:], m.Name)
 	}
-	if m.Description != nil {
-		if len(m.Description) > 0 {
-			data[i] = 0x12
-			i++
-			i = encodeVarintFlavortown(data, i, uint64(len(m.Description)))
-			i += copy(data[i:], m.Description)
-		}
+	if len(m.Description) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintFlavortown(data, i, uint64(len(m.Description)))
+		i += copy(data[i:], m.Description)
 	}
 	return i, nil
 }
@@ -1180,11 +1178,9 @@ func (m *Lunch) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovFlavortown(uint64(l))
 	}
-	if m.Description != nil {
-		l = len(m.Description)
-		if l > 0 {
-			n += 1 + l + sovFlavortown(uint64(l))
-		}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovFlavortown(uint64(l))
 	}
 	return n
 }
