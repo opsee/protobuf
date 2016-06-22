@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/opsee/protobuf/opseeproto/opsee.proto";
+
+package flavortown.flags;
+
+option (opseeproto.graphql) = true;
+
+message User {
+    option (opseeproto.bitflags) = true;
+    bool scopeA = 1;
+    bool scopeB = 2;
+    bool scopeC = 3;
+}
+

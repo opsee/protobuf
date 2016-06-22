@@ -11,150 +11,175 @@
 		},
 		{
 			"checksumSHA1": "0x6ehm507hRKWI5vz1sQYTJCSK8=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/gogoproto",
 			"path": "github.com/gogo/protobuf/gogoproto",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "DECEQVrAJXa2SxCNLTq40H/2VvI=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/jsonpb",
 			"path": "github.com/gogo/protobuf/jsonpb",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "8WpIykxltFQUoZaq6eTm67PRFSg=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/compare",
 			"path": "github.com/gogo/protobuf/plugin/compare",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "cTbYeqRl+/qhD1JZvZmT5OAjaXA=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/defaultcheck",
 			"path": "github.com/gogo/protobuf/plugin/defaultcheck",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "jb3kGNy94cDZbbUKLmkesiW+rgc=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/description",
 			"path": "github.com/gogo/protobuf/plugin/description",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "AGOu7KWvn8htWPFap7A9yEZ8bs0=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/embedcheck",
 			"path": "github.com/gogo/protobuf/plugin/embedcheck",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "yzLXQWgFsBkFkEHScmPkcwdN2iY=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/enumstringer",
 			"path": "github.com/gogo/protobuf/plugin/enumstringer",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "36o5Tr8TRxqc/9wThZgrdA7l8bc=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/equal",
 			"path": "github.com/gogo/protobuf/plugin/equal",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "rr06JFhAJJYdJxKE1Vca2qeMdvU=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/face",
 			"path": "github.com/gogo/protobuf/plugin/face",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "jLfhvv7XzruyDSL97ZqLNV5VRfs=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/gostring",
 			"path": "github.com/gogo/protobuf/plugin/gostring",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "bFHm7LCiKS5NM/aSYgf1bn0NY3Q=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/grpc",
 			"path": "github.com/gogo/protobuf/plugin/grpc",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "aRglO4tk2Z+HGcYf4SCIXmNTX4A=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/marshalto",
 			"path": "github.com/gogo/protobuf/plugin/marshalto",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "/dztWeNfEY/M2fBB2hjO4vC2idE=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/oneofcheck",
 			"path": "github.com/gogo/protobuf/plugin/oneofcheck",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "nO8yAX2Dd+LzqEz4r2NJiJKYXak=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/populate",
 			"path": "github.com/gogo/protobuf/plugin/populate",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "5y8P0Whti1b49rqPXADcJzg2Tw0=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/size",
 			"path": "github.com/gogo/protobuf/plugin/size",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "Ywb2SkkdYE5ZqSKnjX5MGnDty6M=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/stringer",
 			"path": "github.com/gogo/protobuf/plugin/stringer",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "GIx/AUqOclIcFfiarLqgrfDv4i4=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/testgen",
 			"path": "github.com/gogo/protobuf/plugin/testgen",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "5fuoaG6BK9wOKAyp+AdIowdeIx8=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/union",
 			"path": "github.com/gogo/protobuf/plugin/union",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "byiWn9WAN6TMqFMhg5uTZrisctA=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/plugin/unmarshal",
 			"path": "github.com/gogo/protobuf/plugin/unmarshal",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "iZVulPMFFGC70xeLZJafiKzTn18=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/proto",
 			"path": "github.com/gogo/protobuf/proto",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "cvsx+uUCoGVtl84gvhxdpQ7gzwA=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/protoc-gen-gogo/descriptor",
 			"path": "github.com/gogo/protobuf/protoc-gen-gogo/descriptor",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "klj2bnl7I8SvOU9mkn+zxmeIKwI=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/protoc-gen-gogo/generator",
 			"path": "github.com/gogo/protobuf/protoc-gen-gogo/generator",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "RCCKVp591aolVAf0zSxLy2TSSEo=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/protoc-gen-gogo/plugin",
 			"path": "github.com/gogo/protobuf/protoc-gen-gogo/plugin",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "1oXtRxMWwnIf1d+6xpuOFymkVYQ=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/vanity",
 			"path": "github.com/gogo/protobuf/vanity",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
 		},
 		{
 			"checksumSHA1": "ShYuCtJtGrzKMx8xYNcFAzUKzVk=",
+			"origin": "github.com/opsee/protobuf/vendor/github.com/gogo/protobuf/vanity/command",
 			"path": "github.com/gogo/protobuf/vanity/command",
 			"revision": "2752d97bbd91927dd1c43296dbf8700e50e2708c",
 			"revisionTime": "2016-06-17T11:13:52+02:00"
@@ -241,6 +266,12 @@
 			"path": "golang.org/x/net/context",
 			"revision": "8bf2b39827dbadfd566c4fae7a8790d12be8b23c",
 			"revisionTime": "2016-06-18T09:37:29+09:00"
+		},
+		{
+			"checksumSHA1": "v0uHX/rT68NwTauphFdR7QVV2+E=",
+			"path": "google.golang.org/grpc",
+			"revision": "e78224b060cf3215247b7be455f80ea22e469b66",
+			"revisionTime": "2016-06-14T15:36:02-07:00"
 		}
 	],
 	"rootPath": "github.com/opsee/protobuf"
