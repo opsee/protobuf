@@ -29,6 +29,10 @@ func TestSchema(t *testing.T) {
 				Dish: &LineItem_Lunch{&Lunch{
 					Name:        "hogslop",
 					Description: []byte("disgusting"),
+					Tags: map[string]string{
+						"coolness": "no",
+						"tips":     "frosted",
+					},
 				}},
 				PriceCents: 100,
 				CreatedAt:  &opsee_types.Timestamp{100, 100},
@@ -85,6 +89,7 @@ func TestSchema(t *testing.T) {
 					... on flavortownLunch {
 						name
 						description
+						tags
 					}
 					... on flavortown_dessertDessert {
 						name
@@ -109,6 +114,7 @@ func TestSchema(t *testing.T) {
 	lunchitem := populatedMenu.Items[0]
 	assert.Equal(t, lunchitem.GetLunch().Name, getProp(queryResponse.Data, "menu", "items", 0, "dish", "name"))
 	assert.Equal(t, string(lunchitem.GetLunch().Description), getProp(queryResponse.Data, "menu", "items", 0, "dish", "description"))
+	assert.Equal(t, lunchitem.GetLunch().Tags, getProp(queryResponse.Data, "menu", "items", 0, "dish", "tags"))
 	assert.EqualValues(t, lunchitem.PriceCents, getProp(queryResponse.Data, "menu", "items", 0, "price_cents"))
 	assert.EqualValues(t, lunchitem.CreatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "created_at"))
 	assert.EqualValues(t, lunchitem.UpdatedAt.Millis(), getProp(queryResponse.Data, "menu", "items", 0, "updated_at"))

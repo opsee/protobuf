@@ -43,6 +43,8 @@ message Lunch {
   string name = 1;
   // The description of the dish
   bytes description = 2;
+	// a wild map. lunch tags? i guess
+	map<string, string> tags = 3;
 }
 
 // confusion

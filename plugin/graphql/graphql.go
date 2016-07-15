@@ -57,11 +57,12 @@ func (p *graphql) Generate(file *generator.FileDescriptor) {
 	fmtPkg := p.NewImport("fmt")
 
 	for mi, message := range file.Messages() {
-		if message.DescriptorProto.GetOptions().GetMapEntry() {
+		if len(message.DescriptorProto.Field) == 0 {
 			continue
 		}
 
-		if len(message.DescriptorProto.Field) == 0 {
+		if message.DescriptorProto.GetOptions().GetMapEntry() {
+			p.P(`var `, p.graphQLTypeVarName(message), ` = `, schemaPkg.Use(), `.Map`)
 			continue
 		}
 
@@ -289,7 +290,7 @@ func (p *graphql) graphQLType(message *generator.Descriptor, field *descriptor.F
 		panic("unknown proto field type")
 	}
 
-	if field.IsRepeated() {
+	if field.IsRepeated() && !p.IsMap(field) {
 		gqltype = fmt.Sprint(pkgName.Use(), ".NewList(", gqltype, ")")
 	}
 

@@ -32,13 +32,15 @@ func (p *test) Generate(imports generator.PluginImports, file *generator.FileDes
 	randPkg := imports.NewImport("math/rand")
 	timePkg := imports.NewImport("time")
 
-	for mi, message := range file.Messages() {
+	ci := 0
+	for _, message := range file.Messages() {
 		if message.DescriptorProto.GetOptions().GetMapEntry() {
 			continue
 		}
 
-		messageGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d", mi)))
+		messageGQL := strings.TrimSpace(p.Comments(fmt.Sprintf("4,%d", ci)))
 		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		ci++
 
 		if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
 			used = true
