@@ -19,6 +19,8 @@ import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/opsee/protobuf/opseeproto"
 
+import database_sql_driver "database/sql/driver"
+
 import github_com_graphql_go_graphql "github.com/graphql-go/graphql"
 
 import io "io"
@@ -151,20 +153,6 @@ func (this *User) TestFlags(flags ...string) bool {
 	}
 	return true
 }
-func (this *User) Scan(i interface{}) error {
-	switch v := i.(type) {
-	case int:
-		return this.FromUInt64(uint64(v))
-	case int32:
-		return this.FromUInt64(uint64(v))
-	case float32:
-		return this.FromUInt64(uint64(v))
-	case float64:
-		return this.FromUInt64(uint64(v))
-	}
-
-	return fmt.Errorf("invalid type: %T", i)
-}
 func (this *User) FromUInt64(b uint64) error {
 	bb := b
 	bb = b
@@ -187,6 +175,25 @@ func (this *User) FromUInt64(b uint64) error {
 	}
 
 	return nil
+}
+func (this *User) Scan(i interface{}) error {
+	switch v := i.(type) {
+	case int:
+		return this.FromUInt64(uint64(v))
+	case int32:
+		return this.FromUInt64(uint64(v))
+	case int64:
+		return this.FromUInt64(uint64(v))
+	case float32:
+		return this.FromUInt64(uint64(v))
+	case float64:
+		return this.FromUInt64(uint64(v))
+	}
+
+	return fmt.Errorf("invalid type: %T", i)
+}
+func (this *User) Value() (database_sql_driver.Value, error) {
+	return int64(this.UInt64()), nil
 }
 func (this *User) Equal(that interface{}) bool {
 	if that == nil {

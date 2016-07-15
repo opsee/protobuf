@@ -112,6 +112,24 @@ var Timestamp *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
 	},
 })
 
+func coerceMap(value interface{}) interface{} {
+	return value
+}
+
+// Map is the GraphQL Map type definition.
+var Map *graphql.Scalar = graphql.NewScalar(graphql.ScalarConfig{
+	Name:       "Map",
+	Serialize:  coerceMap,
+	ParseValue: coerceMap,
+	ParseLiteral: func(valueAST ast.Value) interface{} {
+		switch valueAST := valueAST.(type) {
+		case *ast.StringValue:
+			return valueAST.Value
+		}
+		return nil
+	},
+})
+
 func coerceAny(value interface{}) interface{} {
 	a, ok := value.(*opsee_types.Any)
 	if ok {
