@@ -16,6 +16,14 @@ const (
 	maxValidSeconds = 253402300800
 )
 
+// Returns a new timestamp by scanning value in src.
+// On scan error, returns the zero value.
+func NewTimestamp(src interface{}) *Timestamp {
+	ts := &Timestamp{}
+	_ = ts.Scan(src)
+	return ts
+}
+
 func (t *Timestamp) Validate() error {
 	if t.Seconds < minValidSeconds {
 		return fmt.Errorf("timestamp: %v before 0001-01-01", t)
