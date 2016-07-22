@@ -64,7 +64,11 @@ func (t *Timestamp) ScanMillis(millis int64) {
 }
 
 func (t *Timestamp) Value() (driver.Value, error) {
-	return time.Unix(t.Seconds, int64(t.Nanos)).UTC(), t.Validate()
+	return t.Time(), t.Validate()
+}
+
+func (t *Timestamp) Time() time.Time {
+	return time.Unix(t.Seconds, int64(t.Nanos)).UTC()
 }
 
 func (t *Timestamp) Millis() int64 {
