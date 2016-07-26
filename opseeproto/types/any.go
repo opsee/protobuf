@@ -1,10 +1,12 @@
 package types
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
 
+	"github.com/gogo/protobuf/jsonpb"
 	proto "github.com/gogo/protobuf/proto"
 )
 
@@ -61,4 +63,21 @@ func (a *Any) MarshalJSON() ([]byte, error) {
 	}
 
 	return bytes, nil
+}
+
+func (a *Any) Scan(src interface{}) error {
+	var source []byte
+	switch src.(type) {
+	case []byte:
+		source = src.([]byte)
+	default:
+		return fmt.Errorf("Received unsupported type to Scan(): %v", src)
+	}
+
+	err := jsonpb.Unmarshal(bytes.NewBuffer(source), a)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
